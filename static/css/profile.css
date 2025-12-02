@@ -1,0 +1,247 @@
+:root{
+    --card-bg: #fff;
+    --muted: #6b6b6b;
+    --accent: #2b6cb0;
+    --radius: 14px;
+    --gap: 36px;
+    font-family: "Vazirmatn", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+
+/* کارت کلی */
+.card{
+    width: min(1100px, 92vw);
+    height: min(700px, 75vh);
+    background: var(--card-bg);
+    border:1px solid rgba(0,0,0,0.08);
+    border-radius:var(--radius);
+    padding: 50px 36px 36px 36px;
+    display:flex;
+    gap:var(--gap);
+    box-shadow: 0 6px 30px rgba(20,20,20,0.04);
+    overflow:auto;
+    margin: 0 auto;
+    direction:ltr; /* نگهداری چینش مشابه تصویر (آواتار سمت چپ) */
+}
+
+/* آواتار */
+.avatar{
+    width:260px;
+    height:260px;
+    border-radius:50%;
+    border:2px solid rgba(0,0,0,0.25);
+    background-color:#f7f7f8;
+    background-position:center;
+    background-size:cover;
+    flex-shrink:0;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    color:var(--muted);
+    font-size:28px;
+}
+
+/* اگر avatar_url خالی باشه، یک آیکون ساده نشان داده می‌شود */
+.avatar.empty::after{
+    content: "";
+    width:88%;
+    height:88%;
+    border-radius:50%;
+    border:2px dashed rgba(0,0,0,0.06);
+    position:absolute;
+}
+
+/* اطلاعات */
+.info{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    padding-top:22px;
+    width:100%;
+}
+
+.row{
+    display:flex;
+    gap:12px;
+    align-items:center;
+}
+
+.label{
+    min-width:70px;
+    font-weight:700;
+    color:var(--muted);
+    font-size:16px;
+}
+
+.value{
+    color:#111;
+    font-size:16px;
+    word-break:break-all;
+}
+
+.url-box{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    border-radius:8px;
+    padding:8px 12px;
+    background:#fbfcfe;
+    border:1px solid rgba(0,0,0,0.04);
+}
+
+.actions{
+    margin-top:18px;
+    display:flex;
+    gap:12px;
+}
+
+.btn{
+    padding:10px 14px;
+    border-radius:10px;
+    border: none;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.btn.primary{background:var(--accent); color:#fff}
+.btn.ghost{background:transparent; color:var(--accent); border:1px solid rgba(43,108,176,0.12)}
+
+/* responsiveness */
+@media (max-width:720px){
+    .card{flex-direction:column; align-items:center; height:auto; direction:rtl}
+    .avatar{width:180px;height:180px;margin-bottom:12px}
+    .label{min-width:70px}
+}
+
+.url-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 8px;
+    padding: 8px 12px;
+    background: #fbfcfe;
+    border: 1px solid rgba(0,0,0,0.04);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.url-box:hover {
+    background: #ebf4ff;
+    border-color: var(--accent);
+}
+
+.url-text {
+    color: var(--accent);
+    font-size: 15px;
+    word-break: break-all;
+}
+
+.copy-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    color: var(--muted);
+    opacity: 0.7;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.copy-btn:hover {
+    background: rgba(43,108,176,0.1);
+    opacity: 1;
+    color: var(--accent);
+}
+
+/* پیام "کپی شد" موقت */
+.url-box.copied::after {
+    content: "کپی شد!";
+    position: absolute;
+    top: -32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2d3748;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    white-space: nowrap;
+    animation: fadeUp 2s forwards;
+}
+
+@keyframes fadeUp {
+    0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+}
+/* استایل اینپوت وقتی قابل ویرایش نیست */
+.editable-input {
+    width: 100%;
+    padding: 5px 10px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    font-size: 14px;
+    color: #111;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+/* وقتی حالت ویرایش فعال شد */
+.editable-input[readonly] {
+    cursor: default;
+}
+
+.editable-input:not([readonly]) {
+    border: 1px solid var(--accent);
+    background: #f8faff;
+    cursor: text;
+}
+
+.editable-input:focus:not([readonly]) {
+    border-color: #1e40af;
+    box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.15);
+}
+
+/* دکمه ذخیره — سبز پررنگ و جذاب */
+.btn.save-btn {
+    background: #16a34a;      /* سبز تیره‌تر و حرفه‌ای */
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+}
+
+.btn.save-btn:hover {
+    background: #15803d;
+}
+
+/* دکمه لغو — قرمز */
+.btn.cancel-btn {
+    background: #dc2626;      /* قرمز استاندارد */
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: none;
+}
+
+.btn.cancel-btn:hover {
+    background: #b91c1c;
+}
+
+/* آیکون‌ها داخل دکمه‌ها */
+.btn.save-btn svg,
+.btn.cancel-btn svg {
+    width: 18px;
+    height: 18px;
+}

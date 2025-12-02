@@ -1,0 +1,32 @@
+# محیط مجازی
+venv/
+.venv/
+env/
+ENV/
+
+# کش پایتون
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+
+# تنظیمات VS Code
+.vscode/
+
+# دیتابیس (خیلی مهم!)
+info.db
+*.db
+*.sqlite
+*.sqlite3
+
+# فایل‌های موقت و لاگ
+*.log
+.DS_Store
+Thumbs.db
+*.tmp
+
+# اگر بعداً از docker یا چیز دیگه استفاده کردی
+.docker/
+node_modules/

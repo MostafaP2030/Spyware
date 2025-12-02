@@ -1,0 +1,144 @@
+.terminal-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  width: 100%;
+  height: 75vh;
+  position: relative;
+}
+
+.terminal {
+  border-radius: 8px;
+  overflow-y: auto;
+  padding: 15px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  font-family: Consolas, monospace;
+}
+
+.cmd {
+  background-color: #000;
+  border: 2px solid #0f0;
+  color: #00ff00;
+}
+
+.ps {
+  background-color: #012456;
+  border: 2px solid #6ea8fe;
+  color: #e0e0e0;
+}
+
+.line {
+  display: flex;
+  align-items: center;
+}
+
+.prompt {
+  margin-right: 8px;
+  user-select: none;
+}
+
+.input {
+  background: none;
+  border: none;
+  outline: none;
+  color: inherit;
+  font-family: inherit;
+  flex-grow: 1;
+  font-size: 1rem;
+  padding: 2px 4px;
+}
+
+.input[disabled] {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.output {
+  white-space: pre-wrap;
+  margin-left: 20px;
+  color: #ccc;
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+h2 {
+  text-align: center;
+  margin: 0 0 10px;
+}
+
+.command-info {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+.terminal-switcher {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.terminal-switch-btn {
+  background-color: #444;
+  
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  margin: 0 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.terminal-switch-btn:hover {
+  background-color: #666;
+}
+.terminal-switch-btn.active {
+  background-color: #222;
+}
+
+/* ———— اسکرول‌بار ترمینال رو کاملاً با تم هماهنگ و شیک کن ———— */
+.terminal::-webkit-scrollbar {
+    width: 12px;                     /* عرض اسکرول‌بار */
+}
+
+.terminal::-webkit-scrollbar-track {
+    background: #111;                /* پس‌زمینه تیره (مثل cmd) */
+    border-left: 1px solid #0f0;      /* خط سبز کنارش — دقیقاً مثل تم CMD */
+    border-radius: 8px;
+}
+
+.terminal::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #0f0, #00ff00, #0f0); /* سبز درخشان */
+    border-radius: 8px;
+    border: 2px solid #000;          /* حاشیه مشکی برای عمق بیشتر */
+    box-shadow: 
+        inset 0 0 6px rgba(0, 255, 0, 0.5),
+        0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.terminal::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #0ff, #00ffff, #0ff); /* فیروزه‌ای هنگام هاور */
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+}
+
+.terminal::-webkit-scrollbar-corner {
+    background: #000;
+}
+
+/* برای PowerShell هم یه نسخه آبی قشنگ */
+.ps::-webkit-scrollbar-track {
+    border-left: 1px solid #6ea8fe;
+}
+
+.ps::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #6ea8fe, #90cdf4, #6ea8fe);
+    box-shadow: 
+        inset 0 0 6px rgba(110, 168, 254, 0.5),
+        0 0 10px rgba(110, 168, 254, 0.3);
+}
+
+.ps::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #90cdf4, #a0d8f8, #90cdf4);
+}

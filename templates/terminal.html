@@ -1,0 +1,20 @@
+<!-- <script>
+    // مسیر فعلی از سرور با > کامل میاد، مستقیم استفاده کن
+    window.initialRoute = "{{ current_path|safe }}";
+</script> -->
+<div id="token" data-inbox-token="{{ profile.inbox_token }}" style="display: none;"></div>
+<input type="text" class="for-focus" style="position: absolute; left: -9999px; opacity: 0; pointer-events: none;">
+<div class="terminal-container" data-initial-route="{{ initial_route|safe }}">
+  <div class="terminal-switcher"> 
+    <button class="terminal-switch-btn" onclick="switchTerminal()">
+      🔄️ Change Terminal
+    </button>
+  </div>
+  <div class="terminal cmd" id="cmd-terminal">
+    <h2>🖥 CMD</h2>
+  </div>
+
+  <div class="terminal ps" id="ps-terminal" style="display: none;">
+    <h2>⚡ PowerShell</h2>
+  </div>
+</div>

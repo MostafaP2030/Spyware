@@ -1,0 +1,364 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+:root{
+    --clr: #222327;
+    --shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: var(--clr);
+}
+
+
+main {
+    margin-top: 120px; /* Push content below the fixed navigation (70px height + 40px top offset + 10px buffer) */
+    padding: 20px;
+    width: 100%;
+    max-width: 1200px; /* Optional: limit width for better readability */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.color-top{
+    width: 100%;
+    height: 110px;
+    background-color: #222327;
+    position: fixed;
+    top: 0;
+    box-shadow: 0 4px 20px #747474;
+}
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 50px;
+  aspect-ratio: 1;
+  display: grid;
+  border: 4px solid #0000;
+  border-radius: 50%;
+  border-right-color: #25b09b;
+  animation: l15 1s infinite linear;
+}
+.loader::before,
+.loader::after {    
+  content: "";
+  grid-area: 1/1;
+  margin: 2px;
+  border: inherit;
+  border-radius: 50%;
+  animation: l15 2s infinite;
+}
+.loader::after {
+  margin: 8px;
+  animation-duration: 3s;
+}
+@keyframes l15{ 
+  100%{transform: rotate(1turn)}
+}
+
+/* ********************************** */
+.content{
+    display: none;
+    width: 100%;
+    height: 100%;
+}
+
+.navigation {
+    width: 100%;
+    height: 70px;
+    background-color: #fff;
+    position: fixed;
+    top: 40px;
+    display: grid;
+    grid-template-columns: 1fr 350px 1fr; /* سه ستون: چپ، وسط، راست */
+    align-items: center;  /* عمودی وسط‌چین */
+}
+
+.navigation ul{
+    display: flex;
+    width: 350px;
+}
+
+.navigation ul li{
+    position: relative;
+    list-style: none;
+    width: 70px;
+    height: 70px;
+    z-index: 1;
+}
+
+.navigation ul li a{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.navigation ul li a .icon{
+    position: relative;
+    display: block;
+    line-height: 75px;
+    text-align: center;
+    transition: 0.5s;
+    color: var(--clr);
+}
+
+.navigation ul li.active a .icon{
+    transform: translateY(-35px) scale(1.3);
+}
+
+.navigation ul li a .text{
+    position: absolute;
+    color: var(--clr);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    transition: 0.5s;
+    font-size: 15px;
+    transform: translateY(20px);
+    opacity: 0;
+}
+
+.navigation ul li.active a .text{
+    transform: translateY(10px);
+    opacity: 1;
+}
+
+.indicator{
+    position: absolute;
+    top: -50%;
+    width: 70px;
+    height: 70px;
+    background: #29fd53;
+    border-radius: 50%;
+    border: 6px var(--clr) solid;
+    transition: 0.5s;
+}
+
+.indicator::before{
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -21.5px;
+    width: 20px;
+    height: 20px;
+    background: transparent;
+    border-top-right-radius: 20px;
+    box-shadow: 1px -10px 0 0 var(--clr);
+}
+
+.indicator::after{
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -21.5px;
+    width: 20px;
+    height: 20px;
+    background: transparent;
+    border-top-left-radius: 20px;
+    box-shadow: -1px -10px 0 0 var(--clr);
+}
+
+.navigation ul li:nth-child(1).active ~ .indicator{
+    transform: translateX(calc(70px * 0));
+}
+.navigation ul li:nth-child(2).active ~ .indicator{
+    transform: translateX(calc(70px * 1));
+}
+.navigation ul li:nth-child(3).active ~ .indicator{
+    transform: translateX(calc(70px * 2));
+}
+.navigation ul li:nth-child(4).active ~ .indicator{
+    transform: translateX(calc(70px * 3));
+}
+.navigation ul li:nth-child(5).active ~ .indicator{
+    transform: translateX(calc(70px * 4));
+}
+
+/* *** part search *** */
+div:has(> .search){
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.search input{
+    background-color: transparent;
+    border: none;
+    width: 0;
+    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-size: 17px;
+    height: 50px;
+}
+input:focus{
+    outline: none;
+    box-shadow: none;
+}
+.search{
+    background-color: #fff;
+    height: 60px;
+    min-width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+}
+
+.search_btn{
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #1900ff;
+}
+
+.search:hover > input{
+    width: 300px;
+    padding-left: 20px;
+}
+
+/* *** left navigator *** */
+.navigation .left{
+    margin-left: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.navigation div .logout{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    border: 1px solid #ff4d4d; /* حاشیه قرمز جذاب */
+    border-radius: 40px;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.199);
+    background-color: #fff;
+}
+
+.navigation div .logout .icon{
+    width: 100%;
+    transition-duration: .3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #ff4d4d; /* آیکون قرمز هماهنگ با حاشیه */
+}
+
+.navigation div .logout .text{
+    position: absolute;
+    top: 34%;
+    right: 0;
+    width: 0%;
+    height: 0%;
+    opacity: 1;
+    color: #ff4d4d; /* متن قرمز هماهنگ */
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.navigation div .logout:hover{
+    width: 125px;
+    border-radius: 40px;
+    border: 1px solid #ff1a1a; /* قرمز تیره‌تر در هاور */
+    background-color: #fff5f5; /* پس‌زمینه قرمز بسیار روشن در هاور */
+    transition: all 0.3s ease;
+}
+
+.navigation div .logout:hover .icon{
+    width: 30%;
+    padding-left: 8px;
+    transition-duration: .3s;
+}
+
+.navigation div .logout:hover .text{
+    opacity: 1;
+    width: 70%;
+    padding-right: 8px;
+    transition-duration: .3s;
+}
+
+.navigation div .logout:active{
+    transform: translate(3px, 3px);
+    border: 3px solid #cc0000; 
+}
+/* *** status *** */
+
+@property --a {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+
+.navigation div .status{
+    margin-right: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%; 
+    width: 60px;
+    border: none;
+    height: 60px;
+    cursor: default; 
+    position: relative;
+    background-color: #c0ffcc;
+}
+
+.navigation div .status .icon{
+    background-color: #c0ffcc;
+    width: 90%;
+    height: 90%;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    color: #15ff00; /* رنگ آیکون ثابت */
+    z-index: 1; /* بالاتر از حاشیه چرخان */
+}
+
+.navigation div .status .anime{
+    background: repeating-conic-gradient(
+        from var(--a),
+        #29fd53 0%,
+        #29fd53 5%,
+        transparent 5%,
+        transparent 40%,
+        #29fd53 50%
+    );
+    position: absolute;
+    animation: rotation 4s linear infinite;
+    z-index: 0;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+        box-shadow: 
+        0 10px 25px rgba(0, 0, 0, 0.6),
+        0 0 40px rgba(33, 150, 243, 0.4);
+}
+
+@keyframes rotation {
+    0% {
+        --a: 0deg;
+    }
+    100% {
+        --a: 360deg;
+    }
+}

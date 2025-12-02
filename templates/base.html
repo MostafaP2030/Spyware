@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% if title %}
+            {{ title|safe }}
+        {% else %}
+            My Application
+        {% endif %}
+    </title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    {% block extra_css %}{% endblock %}
+                        
+    <script src="https://kit.fontawesome.com/767fb6f547.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="loader"></div>
+    <div class="content">
+        <div class="color-top"></div>
+        <div class="navigation">
+            <div class="left">
+                <button class="status">
+                    <div class="anime"></div>
+                    <div class="icon">
+                        <i class="fa-solid fa-signal"></i>
+                    </div>
+                </button>
+                <form action="/logout" method="post" class="logout">
+                    <button class="logout">
+                        <div class="icon">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </div>
+                        <div class="text">Logout</div>
+                    </button>
+                </form>
+            </div>
+            <ul class="center">
+                <li class="list active" data-url="/home">
+                    <a href="javascript:void(0)">
+                        <span class="icon"><i class="fa-regular fa-house"></i></span>
+                        <span class="text">Home</span>
+                    </a>
+                </li>
+                <li class="list" data-url="/profile">
+                    <a href="javascript:void(0)">
+                        <span class="icon"><i class="fa-regular fa-user"></i></span>
+                        <span class="text">Profile</span>
+                    </a>
+                </li>
+                <li class="list" data-url="/terminal">
+                    <a href="javascript:void(0)">
+                        <span class="icon"><i class="fa-solid fa-terminal"></i></span>
+                        <span class="text">Terminal</span>
+                    </a>
+                </li>
+                <li class="list" data-url="/photo">
+                    <a href="javascript:void(0)">
+                        <span class="icon"><i class="fa-regular fa-image"></i></span>
+                        <span class="text">Photo</span>
+                    </a>
+                </li>
+                <li class="list" data-url="/setting">
+                    <a href="javascript:void(0)">
+                        <span class="icon"><i class="fa-solid fa-gear"></i></span>
+                        <span class="text">Setting</span>
+                    </a>
+                </li>
+                <div class="indicator"></div>
+            </ul>
+            <div>
+                <div class="search">
+                    <input type="text" placeholder="Search...">
+                    <div class="search_btn"><i class="fa-solid fa-magnifying-glass"></i></div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            // مسیر همیشه از سرور میاد — حتی با F5 روی هر صفحه!
+            window.initialRoute = "{{ initial_route|default('C:\\\\User>')|safe }}";
+            
+            // ساخت پرامپت استاندارد (مثل CMD واقعی)
+            let prompt = window.initialRoute || "C:\\User>";
+
+            
+            // این متغیر جهانی رو همه جا استفاده می‌کنیم
+            window.currentRoutePrompt = prompt;
+        </script>
+        <main>
+            {% if content %}
+                {{ content|safe }}
+            {% else %}
+                {% block content %}{% endblock %}
+            {% endif %}
+        </main>
+    </div>
+    
+    <script src="/static/js/base.js"></script>
+    <script src="/static/js/terminal.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

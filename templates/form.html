@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Signup</title>
+    <link rel="stylesheet" href="/static/css/form.css">
+</head>
+<body>
+    <div class="container">
+        <div class="box">
+            <div class="login">
+                <div class="mode">
+                    <button class="login-btn active">Login</button>
+                    <button class="signup-btn">Sign up</button>
+                </div>
+                <div class="img">
+                    <img src="/static/picture/user.png" style="width: 100px;">
+                </div>
+                <!-- Login Form -->
+                <div class="form login-form" id="login-form">
+                    <h2>Login Form</h2>
+                    <form action="/login" method="post" id="loginForm" autocomplete="off">
+                        <!-- Dummy input to trick autofill -->
+                        <input type="text" style="display: none;" autocomplete="username">
+                        <input type="password" style="display: none;" autocomplete="current-password">
+                        <div>
+                            <input name="username" type="text" id="username" autocomplete="username" placeholder=" " required>
+                            <label>username</label>
+                        </div>
+                        <div>
+                            <input name="password" type="password" id="password" autocomplete="current-password" placeholder=" " required>
+                            <label>password</label>
+                        </div>
+                        <div class="d_btn">
+                            <button type="submit" class="btn">Login</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Signup Form -->
+                <div class="form signup-form" id="signup-form" style="display: none;">
+                    <h2>Signup Form</h2>
+                    <form action="/signup" method="post" id="signupForm" autocomplete="off">
+                        <div>
+                            <input name="username" type="text" autocomplete="username" placeholder=" " required>
+                            <label>username</label>
+                        </div>
+                        <div>
+                            <input name="email" type="email" autocomplete="email" placeholder=" " required>
+                            <label>email</label>
+                        </div>
+                        <div>
+                            <input name="password" type="password" autocomplete="current-password" placeholder=" " required>
+                            <label>password</label>
+                        </div>
+                        <div class="d_btn">
+                            <button type="submit" class="btn">Sign up</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const labels = document.querySelectorAll(".form label");
+
+        labels.forEach(lbl => {
+            lbl.innerHTML = lbl.innerText
+                .split("")
+                .map((ltr, ind) => `<span style="transition-delay:${ind * 100}ms">${ltr}</span>`)
+                .join("");
+        });
+
+        const loginBtn = document.querySelector('.login-btn');
+        const signupBtn = document.querySelector('.signup-btn');
+        const loginForm = document.querySelector('#login-form');
+        const signupForm = document.querySelector('#signup-form');
+
+        function showForm(formToShow, formToHide, activeBtn, inactiveBtn) {
+            if (formToShow.style.display !== 'none') {
+                return;
+            }
+
+            // Reset both forms to clear input fields
+            document.querySelector('#loginForm').reset();
+            document.querySelector('#signupForm').reset();
+            
+            // Clear input values explicitly to ensure no autofill persists
+            document.querySelector('#username').value = '';
+            document.querySelector('#password').value = '';
+            document.querySelectorAll('#signupForm input').forEach(input => input.value = '');
+
+            loginForm.classList.remove('form-visible', 'form-hidden', 'form-initial');
+            signupForm.classList.remove('form-visible', 'form-hidden', 'form-initial');
+
+            formToHide.classList.add('form-hidden');
+            
+            formToShow.style.display = 'flex';
+            formToShow.classList.add('form-initial');
+            
+            setTimeout(() => {
+                formToHide.style.display = 'none';
+                formToHide.classList.remove('form-hidden');
+                void formToShow.offsetWidth;
+                formToShow.classList.remove('form-initial');
+                formToShow.classList.add('form-visible');
+            }, 300);
+
+            activeBtn.classList.add('active');
+            inactiveBtn.classList.remove('active');
+        }
+
+        loginBtn.addEventListener('click', () => {
+            showForm(loginForm, signupForm, loginBtn, signupBtn);
+        });
+
+        signupBtn.addEventListener('click', () => {
+            showForm(signupForm, loginForm, signupBtn, loginBtn);
+        });
+
+        // Reset forms and clear inputs on page load to override autofill
+        window.addEventListener('load', () => {
+            const loginFormElement = document.querySelector('#loginForm');
+            const signupFormElement = document.querySelector('#signupForm');
+            
+            // Reset forms
+            loginFormElement.reset();
+            signupFormElement.reset();
+            
+            // Clear input values explicitly with a delay to override autofill
+            const clearInputs = () => {
+                document.querySelector('#username').value = '';
+                document.querySelector('#password').value = '';
+                document.querySelectorAll('#signupForm input').forEach(input => input.value = '');
+            };
+            
+            // Run immediately and with a delay
+            clearInputs();
+            setTimeout(clearInputs, 100);
+            setTimeout(clearInputs, 300);
+            setTimeout(clearInputs, 500);
+            
+            // Use setInterval to clear inputs for the first 2 seconds
+            let counter = 0;
+            const interval = setInterval(() => {
+                clearInputs();
+                counter++;
+                if (counter >= 4) clearInterval(interval); // Stop after 4 iterations (~2 seconds)
+            }, 500);
+        });
+
+        // مدیریت ارسال فرم‌ها با Fetch API
+        function handleFormSubmit(event, formId) {
+            event.preventDefault();
+            const form = document.querySelector(formId);
+            const formData = new FormData(form);
+            // تعیین مسیر بر اساس فرم
+            const url = formId === '#loginForm' ? '/login' : '/signup';
+            fetch(url, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Form submission response:', data);
+                if (data.status === 'success') {
+                    window.location.href = data.redirect;
+                } else {
+                    console.error('Form submission failed:', data);
+                    alert('Error: ' + (data.error || 'Submission failed'));
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting form:', error);
+                alert('Error submitting form. Please try again.');
+            });
+        }
+
+        document.querySelector('#loginForm').addEventListener('submit', (event) => {
+            handleFormSubmit(event, '#loginForm');
+        });
+
+        document.querySelector('#signupForm').addEventListener('submit', (event) => {
+            handleFormSubmit(event, '#signupForm');
+        });
+    </script>
+</body>
+</html>

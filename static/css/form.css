@@ -1,0 +1,269 @@
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: white;
+}
+.container {
+    width: 100%;
+    height: 100vh;
+    background-color: #171829;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@property --a {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+
+.box {
+    position: relative;
+    width: 350px;
+    height: 550px;
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: repeating-conic-gradient(
+        from var(--a),
+        #2196f3 0%,
+        #2196f3 5%,
+        transparent 5%,
+        transparent 40%,
+        #2196f3 50%
+    );
+    animation: rotation 4s linear infinite;
+    box-shadow: 
+        0 10px 25px rgba(0, 0, 0, 0.6),
+        0 0 40px rgba(33, 150, 243, 0.4);
+}
+
+.box::after {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border-radius: 30px;
+    background: #171829;
+    border: 2px solid rgba(33, 150, 243, 0.4);
+    box-shadow:
+        inset 0 0 15px rgba(33, 150, 243, 0.2),
+        inset 0 0 5px rgba(0, 0, 0, 0.8);
+    z-index: 2;
+}
+
+@keyframes rotation {
+    0% {
+        --a: 0deg;
+    }
+    100% {
+        --a: 360deg;
+    }
+}
+
+.img {
+    position: absolute;
+    top: 50px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 30px;
+    width: 100px;
+    height: 100px;
+    margin-top: 30px;
+}
+
+.login {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.form {
+    position: absolute;
+    top: 200px;
+    width: 80%;
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+    height: auto;
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.form-hidden {
+    opacity: 0;
+    transform: translateX(50px); /* Move to the right */
+}
+
+.form-initial {
+    opacity: 0;
+    transform: translateX(-50px); /* Start from the left */
+}
+
+.form-visible {
+    opacity: 1;
+    transform: translateX(0); /* Final position */
+}
+
+form {
+    height: 200px;
+}
+
+form input {
+    margin-bottom: 15px;
+    width: 100%;
+    height: 25px;
+    background-color: transparent;
+    border: none;
+    border-bottom: solid 1px rgb(205, 205, 205);
+    color: #2196f3;
+    font-size: 14px;
+}
+
+form input:focus {
+    outline: none;
+    border-bottom-color: #ddd;
+}
+
+form div {
+    position: relative;
+}
+
+form label {
+    position: absolute;
+    top: 0px;
+    left: 2px;
+    pointer-events: none;
+    font-size: 16px;
+}
+
+form label span {
+    display: inline-block;
+    font-size: 16px;
+    min-width: 5px;
+    transition: all 0.3s cubic-bezier(0.068, -0.55, 0.256, 1.55);
+}
+
+form input:focus + label span,
+form input:valid + label span,
+form input:not(:placeholder-shown) + label span {
+    color: #ddd;
+    transform: translateY(-15px);
+}
+
+.d_btn {
+    width: 100%;
+    text-align: center;
+}
+
+.btn {
+    margin: auto;
+    border: none;
+    padding: 10px 40px;
+    border-radius: 8px;
+    font-size: 15px;
+    margin-top: 10px;
+    background: linear-gradient(145deg, #2196f3, #0d47a1);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 
+        0 6px 10px rgba(0, 0, 0, 0.3),
+        inset 0 2px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.2s ease;
+    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.4);
+    letter-spacing: 0.5px;
+    font-family: 'Vazirmatn', 'Roboto', sans-serif;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 10px 15px rgba(0, 0, 0, 0.35),
+        inset 0 2px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn:active {
+    transform: translateY(2px);
+    box-shadow: 
+        0 4px 6px rgba(0, 0, 0, 0.2),
+        inset 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.mode {
+    margin-bottom: 20px;
+    position: absolute;
+    top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.mode button {
+    background-color: transparent;
+    border: none;
+    color: #ddd;
+    padding: 5px 15px;
+    cursor: pointer;
+    font-size: 16px;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.mode button.active {
+    color: #2196f3;
+}
+
+.mode button::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #2196f3;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s ease;
+}
+
+.mode button.active::after {
+    transform: scaleX(1);
+}
+
+.mode button:not(.active)::after {
+    transform: scaleX(0);
+}
+
+.mode button:focus {
+    outline: none;
+}
+
+/* Override autofill background in WebKit browsers (Chrome, Safari, etc.) */
+form input:-webkit-autofill,
+form input:-webkit-autofill:hover,
+form input:-webkit-autofill:focus,
+form input:-webkit-autofill:active {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: #2196f3;
+    background-color: transparent !important;
+    transition: background-color 5000s ease-in-out 0s;
+    box-shadow: inset 0 0 0 1000px transparent;
+    border-bottom: solid 1px rgb(205, 205, 205) !important;
+}
+
+/* For Firefox */
+form input:-moz-autofill {
+    background-color: transparent !important;
+    border-bottom: solid 1px rgb(205, 205, 205) !important;
+}
