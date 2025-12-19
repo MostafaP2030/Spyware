@@ -78,14 +78,48 @@ def index():
 @main_bp.route('/home')
 def home():
     user = get_current_user()
+    
+    system_info = {}
+    if user and user.profile and user.profile.main_info:
+        system_info = user.profile.main_info
+
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({
-            'content': render_template('home.html', user=user),
+            'content': render_template('home.html', user=user, system_info=system_info),
             'css': ['/static/css/home.css'],
             'js': ['/static/js/home.js']
         })
     return render_template('base.html')
 
+
+
+@main_bp.route('/save-system-info', methods=['POST'])
+def save_system_info():
+    user = get_current_user()
+    if not user or not user.profile:
+        return jsonify({"success": False}), 401
+
+    data = request.get_json(silent=True) or {}
+    key = data.get('key')
+    value = str(data.get('value', '')).strip()
+
+    if key not in ['os', 'cpu', 'username', 'pc_name'] or not value:
+        return jsonify({"success": False}), 400
+
+    profile = user.profile
+
+    if profile.main_info is None:
+        profile.main_info = {}
+
+    profile.main_info[key] = value
+    
+    from sqlalchemy.orm.attributes import flag_modified
+
+    flag_modified(profile, 'main_info')
+
+    db.session.commit()
+
+    return jsonify({"success": True})
 
 @main_bp.route('/profile')
 def profile():
@@ -208,7 +242,98 @@ def upload_avatar():
         "ext": ext
     }), 200
 
+# main_routes.py
 
+COMMANDS_LIST = [
+    # --- NirCmd Commands (Shortened) ---
+    "mutesysvolume 1",       # قطع صدا (Mute)
+    "mutesysvolume 0",       # وصل صدا (Unmute)
+    "mutesysvolume 2",       # تغییر وضعیت صدا (Toggle)
+    "setsysvolume 65535",    # صدای ۱۰۰ درصد
+    "setsysvolume 32768",    # صدای ۵۰ درصد
+    "changesysvolume 5000",  # افزایش جزئی صدا
+    "changesysvolume -5000", # کاهش جزئی صدا
+    
+    "monitor off",           # خاموش کردن مانیتور
+    "monitor on",            # روشن کردن مانیتور
+    "screensaver",           # اجرای اسکرین‌سیور
+    "standby",               # حالت Sleep
+    "hibernate",             # حالت Hibernate
+    
+    "exitwin logoff",        # خروج از حساب کاربری
+    "exitwin reboot",        # ریستارت فوری
+    "exitwin poweroff",      # خاموش کردن فوری
+    
+    "win min alltop",        # مینیمایز کردن تمام پنجره‌ها
+    "win max alltop",        # ماکسیمایز کردن تمام پنجره‌ها
+    "killprocess chrome.exe", # بستن اجباری کروم
+    
+    'speak text "System Online"', # تبدیل متن به گفتار
+    "beep 500 1000",         # پخش صدای بوق
+    "cdrom open",            # باز کردن درایو نوری
+    "cdrom close",           # بستن درایو نوری
+    "emptybin",              # خالی کردن سطل زباله
+    "savescreenshot screen.png" # اسکرین‌شات
+]
+
+@main_bp.route('/suggest-command', methods=['GET'])
+def suggest_command():
+    query = request.args.get('q', '').lower()
+    
+    if not query:
+        return jsonify({'suggestion': ''})
+
+    # پیدا کردن اولین دستوری که با متن کاربر شروع می‌شود
+    match = next((cmd for cmd in COMMANDS_LIST if cmd.lower().startswith(query)), None)
+    
+    return jsonify({'suggestion': match if match else ''})
+
+
+@main_bp.route('/change-profile', methods=['POST'])
+def change_profile():
+    user = get_current_user()
+    if not user:
+        return jsonify({"success": False, "message": "کاربر لاگین نیست"}), 401
+
+    data = request.get_json()
+    if not data:
+        return jsonify({"success": False, "message": "داده‌ای ارسال نشده است"}), 400
+
+    # استخراج مقادیر
+    new_fullname = data.get('fullname', '').strip()
+    new_username = data.get('username', '').strip()
+    new_password = data.get('password', '').strip()
+    new_email = data.get('email', '').strip()
+
+    # اعتبارسنجی اولیه
+    if not new_username:
+        return jsonify({"success": False, "message": "نام کاربری نمی‌تواند خالی باشد"}), 400
+
+    # بررسی تکراری نبودن نام کاربری
+    if new_username != user.username:
+        exists = User.query.filter_by(username=new_username).first()
+        if exists:
+            return jsonify({"success": False, "message": "این نام کاربری توسط شخص دیگری رزرو شده است"}), 400
+
+    try:
+        # ۱. به‌روزرسانی جدول User
+        user.username = new_username
+        if new_password: # تغییر پسورد فقط در صورت پر بودن فیلد
+            user.password = new_password
+        
+        # ۲. به‌روزرسانی جدول Profile
+        if user.profile:
+            user.profile.fullname = new_fullname
+            user.profile.email = new_email
+        
+        db.session.commit()
+        return jsonify({"success": True, "message": "تغییرات با موفقیت ذخیره شد"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Update Error: {e}")
+        return jsonify({"success": False, "message": "خطا در برقراری ارتباط با پایگاه داده"}), 500
+    
 # ------------------------------------------------------------------
 # فایل‌های استاتیک
 # ------------------------------------------------------------------

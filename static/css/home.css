@@ -1,0 +1,481 @@
+.loaderInfo {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: block;
+  margin:15px auto;
+  position: relative;
+  color: #FFF;
+  left: -20px;
+  box-sizing: border-box;
+  animation: shadowRolling 2s linear infinite;
+}
+
+@keyframes shadowRolling {
+  0% {
+    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+  12% {
+    box-shadow: 100px 0 white, 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+  25% {
+    box-shadow: 110px 0 white, 100px 0 white, 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+  36% {
+    box-shadow: 120px 0 white, 110px 0 white, 100px 0 white, 0px 0 rgba(255, 255, 255, 0);
+  }
+  50% {
+    box-shadow: 130px 0 white, 120px 0 white, 110px 0 white, 100px 0 white;
+  }
+  62% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 white, 120px 0 white, 110px 0 white;
+  }
+  75% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0), 130px 0 white, 120px 0 white;
+  }
+  87% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0), 130px 0 white;
+  }
+  100% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
+  }
+}
+
+/* ===============================
+   Layout
+=================================*/
+.info-container{
+    display: grid;
+    grid-template-columns: repeat(2, auto); /* حالت بزرگ: همه کنار هم */
+    grid-auto-rows: 70px; /* ارتفاع هر ردیف */
+    gap: 20px;
+    justify-content: center;
+    align-items: start; /* آیتم‌ها از بالا شروع میشن */
+    /* height: 400px; */
+    margin-bottom: 50px;
+}
+
+.button-container {
+    display: grid;
+    grid-template-columns: repeat(8, auto); /* حالت بزرگ: همه کنار هم */
+    gap: 30px;
+    justify-content: center;
+    align-items: start; /* آیتم‌ها از بالا شروع میشن */
+}
+
+@media (max-width: 900px) {
+    .button-container {
+        margin: auto;
+        width: 400px;
+        grid-template-columns: repeat(4, 1fr); /* 4 ستون مساوی */
+        grid-auto-rows: 100px; /* ارتفاع هر ردیف */
+        justify-items: center; /* وسط‌چین هر آیتم در ستون */
+        align-items: start;   /* جلوگیری از فاصله زیاد عمودی */
+        row-gap: 20px;        /* فاصله بین ردیف‌ها کنترل‌شده */
+    }
+    .info-container{
+        grid-template-columns: repeat(1, auto);
+        grid-auto-rows: 70px; /* ارتفاع هر ردیف */
+        row-gap: 20px;
+        justify-content: center;
+        align-items: start; /* آیتم‌ها از بالا شروع میشن */
+        margin-bottom: 50px;
+    }
+}
+
+
+
+.button-container > button {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===============================
+   Base button style (مشترک)
+=================================*/
+.btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #1e1e1e;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: 0.25s;
+    box-shadow: 0 0 14px rgba(255,255,255,0.05);
+}
+
+.btn:hover {
+    background: #292929;
+    transform: translateY(-3px);
+}
+
+.btn:active {
+    transform: scale(0.95);
+}
+
+/* ===============================
+   POWER BUTTON
+=================================*/
+.power-btn {
+    color: #ff4d4d;
+    box-shadow: 0 0 15px rgba(255,0,0,0.4);
+}
+
+.power-btn:hover {
+    box-shadow: 0 0 22px rgba(255,0,0,0.6);
+}
+
+.power-btn.on {
+    color: #4dff79;
+    box-shadow: 0 0 18px rgba(0,255,100,0.5);
+}
+
+/* ===============================
+   RESTART BUTTON
+=================================*/
+.restart-btn {
+    color: #4da6ff;
+    box-shadow: 0 0 15px rgba(0,140,255,0.35);
+}
+
+.restart-btn:hover {
+    box-shadow: 0 0 22px rgba(0,140,255,0.5);
+}
+
+/* Spin animation */
+.spin {
+    animation: rot 0.6s ease;
+}
+
+@keyframes rot {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* ===============================
+   OTHER ICON BUTTONS
+=================================*/
+.logout      { color: #ff6b6b; box-shadow: 0 0 15px rgba(255,0,0,0.35); }
+.mute        { color: #ffaa2b; box-shadow: 0 0 15px rgba(255,153,0,0.35); }
+.unmute      { color: #58ff6b; box-shadow: 0 0 15px rgba(0,255,89,0.35); }
+.trash       { color: #ff4dd2; box-shadow: 0 0 15px rgba(255,0,191,0.35); }
+.monitor-on  { color: #4dff4d; box-shadow: 0 0 16px rgba(0,255,0,0.35); }
+.monitor-off { color: #ff4d4d; box-shadow: 0 0 16px rgba(255,0,0,0.35); }
+
+/* Hover effects */
+.logout:hover      { box-shadow: 0 0 22px rgba(255,0,0,0.55); }
+.mute:hover        { box-shadow: 0 0 22px rgba(255,170,43,0.55); }
+.unmute:hover      { box-shadow: 0 0 22px rgba(0,255,89,0.55); }
+.trash:hover       { box-shadow: 0 0 22px rgba(255,0,191,0.55); }
+.monitor-on:hover  { box-shadow: 0 0 22px rgba(0,255,0,0.55); }
+.monitor-off:hover { box-shadow: 0 0 22px rgba(255,0,0,0.55); }
+
+/* ===============================
+   Label with color-matched style
+=================================*/
+
+.btn-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.btn-label { 
+    position: absolute; 
+    bottom: -32px;
+
+    font-size: 14px; 
+    font-weight: 500; 
+
+    padding: 0;   /* بدون پس‌زمینه، پس پدینگ لازم نیست */
+
+    opacity: 0; 
+    transform: translateY(8px) scale(0.96); 
+    transition: 0.35s cubic-bezier(.2,.8,.2,1); 
+    pointer-events: none;
+
+    /* فقط سایه متن (Glow) */
+    text-shadow: 0px 0px 8px rgba(255,255,255,0.35),
+                 0px 2px 4px rgba(0,0,0,0.35);
+}
+
+
+/* ===============================
+   Hover animation (fade + slide + scale)
+=================================*/
+
+.btn:hover .btn-label {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* ===============================
+   Label colors matching button colors
+=================================*/
+
+.btn-wrap .power-btn       ~ .btn-label { color: #ff4d4d; }
+.btn-wrap .restart-btn     ~ .btn-label { color: #4da6ff; }
+.btn-wrap .logout          ~ .btn-label { color: #ff6b6b; }
+.btn-wrap .mute            ~ .btn-label { color: #ffaa2b; }
+.btn-wrap .unmute          ~ .btn-label { color: #58ff6b; }
+.btn-wrap .trash           ~ .btn-label { color: #ff4dd2; }
+.btn-wrap .monitor-on      ~ .btn-label { color: #4dff4d; }
+.btn-wrap .monitor-off     ~ .btn-label { color: #ff4d4d; }
+
+
+/* باکس با بکگراند شفاف و خط پایین روی پس‌زمینه */
+.info-box {
+    display: flex;
+    /* width: 300px; */
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05); /* نیمه شفاف برای بکگراند */
+    backdrop-filter: blur(6px); /* جلوه glassmorphism */
+    min-width: 300px;
+    margin: 10px 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.6); /* خط پایین زیبا */
+    margin-bottom: 100px;
+}
+
+/* چپ با آیکون و متن */
+.info-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.info-icon {
+    font-size: 20px;
+    color: #fff;
+}
+
+.information {
+    font-weight: 600;
+    font-size: 15px;
+    color: #fff;
+}
+
+/* دکمه Retry */
+.retry-btn {
+    margin-left: 5px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4CAF50, #81C784);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.retry-btn i {
+    font-size: 16px;
+}
+
+/* حالت هاور */
+.retry-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* حالت کلیک فقط با CSS */
+.retry-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    background: linear-gradient(135deg, #388E3C, #66BB6A);
+}
+
+/* // =============================== */
+.notification {
+    position: fixed;
+    top: 100px;                    /* شروع از بیرون صفحه */
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 300px;
+    max-width: 90%;
+    padding: 14px 24px;
+    border-radius: 8px;
+    color: white;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 15px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+    opacity: 0;
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    pointer-events: none; /* تا روی کلیک‌ها تأثیر نذاره */
+    white-space: pre-wrap; /* برای حفظ \n و نمایش درست خروجی چندخطی */
+    word-break: break-word;
+}
+
+.notification.success {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+}
+
+.notification.error {
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+}
+
+.notification.show {
+    top: 140px;
+    opacity: 1;
+}
+
+.notification.hide {
+    top: 100px;
+    opacity: 0;
+}
+
+/* ===============================
+Send box
+=================================*/
+.send-container {
+    width: 100%;
+    padding: 12px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+}
+
+.send-box {
+    position: relative;
+    margin-top: 30px;
+    width: 100%;
+    max-width: 400px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(6px);
+    border-radius: 25px;
+    /* padding را حذف کردیم و به خود اینپوت‌ها می‌دهیم تا تراز شوند */
+    padding: 0; 
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(255,255,255,0.20);
+    box-shadow: 0 6px 22px rgba(0,0,0,0.35);
+    height: 50px; /* ارتفاع ثابت برای تراز بهتر */
+}
+
+/* استایل مشترک برای هر دو اینپوت */
+.send-box input {
+    width: calc(100% - 60px); /* فضا برای دکمه ارسال باقی بماند */
+    height: 100%;
+    border: none;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    padding: 0 20px; /* پدینگ یکسان */
+    outline: none;
+    font-family: "Segoe UI", "Poppins", sans-serif; /* فونت حتماً باید یکی باشد */
+    background: transparent;
+    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 25px;
+    line-height: 50px; /* هم‌اندازه ارتفاع باکس */
+}
+
+/* اینپوت شبح (زیرین) */
+#hint-send {
+    z-index: 1;
+    color: rgba(255, 255, 255, 0.3); /* رنگ خاکستری کمرنگ */
+    pointer-events: none; /* تا کلیک روی اینپوت اصلی انجام شود */
+}
+
+/* اینپوت کاربر (رویی) */
+#show-send {
+    z-index: 2;
+    color: #fff; /* رنگ متن اصلی */
+    /* بک‌گراند شفاف است تا زیری دیده شود */
+}
+
+/* دکمه ارسال */
+.send-btn {
+    position: absolute;
+    right: 5px; /* چسبیدن به سمت راست */
+    top: 50%;
+    transform: translateY(-50%); /* وسط‌چین عمودی */
+    
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: #fff;
+    z-index: 3;
+    transition: 0.25s cubic-bezier(.25,.46,.45,.94);
+
+}
+
+/* هاور زیبا */
+.send-btn:hover {
+    background: rgba(255,255,255,0.22);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* موج گسترده هنگام کلیک */
+.send-btn:active::after {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: rgba(255,255,255,0.45);
+    border-radius: 50%;
+    animation: rippleSmooth 0.55s cubic-bezier(.22,.61,.36,1) forwards;
+}
+
+/* تکان خوردن + بزرگ شدن آیکن */
+.send-btn:active i {
+    transform: scale(1.25) rotate(18deg);
+}
+
+.send-btn.sending i {
+    transform: scale(1.3) rotate(22deg);
+    opacity: 0.7;
+}
+
+.send-btn i {
+    font-size: 20px;
+    transition: transform 0.28s cubic-bezier(.22,.61,.36,1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* جبران شیفت داخلی آیکن paper-plane */
+    transform: translate(-2px, 2px);
+}
+
+/* انیمیشن موج */
+@keyframes rippleSmooth {
+    0% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    70% {
+        opacity: 0.15;
+        transform: scale(12);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(16);
+    }
+}

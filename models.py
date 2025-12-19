@@ -1,9 +1,25 @@
 from flask_sqlalchemy import SQLAlchemy
 import secrets
-from sqlalchemy.ext.mutable import MutableList
+from sqlalchemy.ext.mutable import MutableList, MutableDict
+from sqlalchemy import Text, TypeDecorator
+import json
 
 db = SQLAlchemy()
 
+class JSONEncodedDict(TypeDecorator):
+    impl = Text
+    cache_ok = True
+
+    def process_bind_param(self, value, dialect):
+        if value is not None:
+            return json.dumps(value, ensure_ascii=False)
+        return None
+
+    def process_result_value(self, value, dialect):
+        if value is not None:
+            return json.loads(value)
+        return {}
+    
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -26,12 +42,12 @@ class Profile(db.Model):
     inbox = db.Column(MutableList.as_mutable(db.JSON), default=list, nullable=False)
     last_seen_inbox_id = db.Column(db.Integer, default=-1)
     current_directory = db.Column(db.String(500), default='C:\\User')  # فیلد جدید برای ذخیره مسیر
+    main_info = db.Column( MutableDict.as_mutable(JSONEncodedDict()),default=dict,nullable=False) #info main: os , username, pc name , cpu
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique=True)
     user = db.relationship('User', back_populates='profile')
     
     def get_avatar_filename(self):
-        """مثلاً: a1b2c3d4e5f6g7h8.jpg"""
         if not self.avatar or self.avatar == 'default.jpg':
             return 'default.jpg'
         # اگر فقط پسوند ذخیره کردی (مثل "jpg") → با inbox_token ترکیب میشه
@@ -40,6 +56,5 @@ class Profile(db.Model):
         return self.avatar  # اگر کل نام فایل ذخیره شده باشه
 
     def get_avatar_url(self):
-        """آدرس کامل برای استفاده در HTML"""
         filename = self.get_avatar_filename()
         return f"/static/uploads/avatars/{filename}"

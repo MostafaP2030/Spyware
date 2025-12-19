@@ -48,7 +48,6 @@ function addNewInput(terminal, type) {
             if (type === "cmd") lastCmdCommand = cmd;
             else lastPsCommand = cmd;
 
-            sendCommandToServer(cmd, type);
             handleCommand(cmd, terminal, type);
         }
     });
@@ -62,7 +61,7 @@ async function sendCommandToServer(cmd, type) {
             body: JSON.stringify({ type, command: cmd })
         });
         const data = await response.json();
-        return data; // {status: "success", id: 123, type: "cmd"}
+        return data; 
     } catch (err) {
         console.error("Error saving command:", err);
         return null;
@@ -194,7 +193,8 @@ async function waitForCommandResponse(commandId, type, outputLine) {
                 // خروجی عادی (مثل dir یا خطای cd)
                 let options = {};
                 if (info.includes("The system cannot find the path specified.") ||
-                    info.includes("Error ") && info.includes("Cannot change directory")) {
+                    info.includes("Error ") && info.includes("Cannot change directory") ||
+                    info.includes("<error>")) {
                     options = { color: "#ff4444", weight: "bold" };  // قرمز برای خطا
                 }
                 displayInfo(outputLine, info, options);

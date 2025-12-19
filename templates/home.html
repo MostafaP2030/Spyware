@@ -1,1 +1,84 @@
-<p>Home</p>
+<div class="info-container">
+    <div class="info-box">
+        <div class="info-left">
+            <i class="fa-solid fa-microchip info-icon"></i>
+            <span class="information" data-name="cpu">{{ system_info.cpu|default('CPU') }}</span>
+        </div>
+        <button class="retry-btn" data-command="(Get-CimInstance Win32_Processor).Name" data-type="ps">
+            <i class="fa-solid fa-arrows-rotate"></i>
+        </button>
+    </div>
+    <div class="info-box">
+        <div class="info-left">
+            <i class="fa-solid fa-computer info-icon"></i>
+            <span class="information" data-name="os">{{ system_info.os|default('OS') }}</span>
+        </div>
+        <button class="retry-btn" data-command="(Get-CimInstance Win32_OperatingSystem).Caption" data-type="ps">
+            <i class="fa-solid fa-arrows-rotate"></i>
+        </button>
+    </div>
+    <div class="info-box">
+        <div class="info-left">
+            <i class="fa-solid fa-user info-icon"></i>
+            <span class="information" data-name="username">{{ system_info.username|default('username') }}</span>
+        </div>
+        <button class="retry-btn" data-command="$env:USERNAME" data-type="ps">
+            <i class="fa-solid fa-arrows-rotate"></i>
+        </button>
+    </div>
+    <div class="info-box">
+        <div class="info-left">
+            <i class="fa-solid fa-desktop info-icon"></i>
+            <span class="information" data-name="pc_name">{{ system_info.pc_name|default('PC Name') }}</span>
+        </div>
+        <button class="retry-btn" data-command="$env:COMPUTERNAME" data-type="ps">
+            <i class="fa-solid fa-arrows-rotate"></i>
+        </button>
+    </div>
+</div>
+
+</div>
+<div class="button-container">
+    <button class="btn power-btn on" data-command="exitwin poweroff force" data-type="dll"">
+        <i class="fa-solid fa-power-off"></i>
+        <span class="btn-label">Power</span>
+    </button>
+    <button class="btn restart-btn" data-command="exitwin reboot force" data-type="dll"">
+        <i class="fa-solid fa-rotate-right"></i>
+        <span class="btn-label">Restart</span>
+    </button>
+    <button class="btn logout" data-command="lockws" data-type="dll"">
+        <i class="fa-solid fa-lock"></i>
+        <span class="btn-label">Lock</span>
+    </button>
+    <button class="btn mute" data-command="mutesysvolume 1" data-type="dll"">
+        <i class="fa-solid fa-volume-xmark"></i>
+        <span class="btn-label">Mute</span>
+    </button>
+    <button class="btn unmute" data-command="mutesysvolume 0" data-type="dll"">
+        <i class="fa-solid fa-volume-high"></i>
+        <span class="btn-label">Unmute</span>
+    </button>
+    <button class="btn trash" data-command="emptybin" data-type="dll"">
+        <i class="fa-solid fa-trash"></i>
+        <span class="btn-label">Trash</span>
+    </button>
+    <button class="btn monitor-on" data-command="monitor async_on" data-type="dll"">
+        <i class="fa-solid fa-display"></i>
+        <span class="btn-label">Monitor On</span>
+    </button>
+    <button class="btn monitor-off" data-command="monitor off" data-type="dll"">
+        <i class="fa-solid fa-tv"></i>
+        <span class="btn-label">Monitor Off</span>
+    </button>
+
+</div>
+<div class="send-container">
+    <div class="send-box">
+        <input type="text" id="hint-send" disabled>
+        <input type="text" id="show-send" placeholder="Type a command..." autocomplete="off">
+        <button class="send-btn">
+            <i class="fa-solid fa-paper-plane"></i>
+        </button>
+    </div>
+</div>

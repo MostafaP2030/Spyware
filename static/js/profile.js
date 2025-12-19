@@ -48,49 +48,79 @@ function initProfileCopy() {
     urlBox.querySelector(".copy-btn")?.addEventListener("click", doCopy);
 }
 
-// تابع ویرایش پروفایل
 function initProfileEdit() {
     const editBtn = document.getElementById("editBtn");
     const saveBtn = document.getElementById("saveBtn");
     const cancelBtn = document.getElementById("cancelBtn");
     const inputs = document.querySelectorAll(".editable-input");
 
-    if (!editBtn || !saveBtn || !cancelBtn || inputs.length === 0) {
-        console.log("یکی از المنت‌های ویرایش پیدا نشد:", { editBtn, saveBtn, cancelBtn, inputs });
-        return;
-    }
+    if (!editBtn || !saveBtn || !cancelBtn) return;
 
-    let original = {};
+    let originalData = {};
 
-    editBtn.addEventListener("click", () => {
-        console.log("دکمه ویرایش کلیک شد");
+    // حالت ویرایش
+    editBtn.onclick = () => {
         inputs.forEach(inp => {
-            original[inp.name] = inp.value;
+            originalData[inp.name] = inp.value;
             inp.removeAttribute("readonly");
+            inp.classList.add("editing");
         });
         editBtn.style.display = "none";
         saveBtn.style.display = "inline-flex";
         cancelBtn.style.display = "inline-flex";
-        inputs[0].focus();
-    });
+    };
 
-    cancelBtn.addEventListener("click", () => {
+    // لغو تغییرات
+    cancelBtn.onclick = () => {
         inputs.forEach(inp => {
-            inp.value = original[inp.name] || "";
+            inp.value = originalData[inp.name];
             inp.setAttribute("readonly", "");
+            inp.classList.remove("editing");
         });
+        editBtn.style.display = "inline-flex";
         saveBtn.style.display = "none";
         cancelBtn.style.display = "none";
-        editBtn.style.display = "inline-flex";
-    });
+    };
 
-    saveBtn.addEventListener("click", () => {
-        alert("ذخیره شد! (فعلاً فقط تست — بعداً به سرور وصل می‌کنیم)");
-        inputs.forEach(inp => inp.setAttribute("readonly", ""));
-        saveBtn.style.display = "none";
-        cancelBtn.style.display = "none";
-        editBtn.style.display = "inline-flex";
-    });
+    // ذخیره در سرور
+    saveBtn.onclick = async () => {
+        const payload = {};
+        inputs.forEach(inp => payload[inp.name] = inp.value);
+
+        // نمایش وضعیت در حال بارگذاری روی دکمه
+        const originalText = saveBtn.innerHTML;
+        saveBtn.disabled = true;
+        saveBtn.textContent = "در حال ذخیره...";
+
+        try {
+            const res = await fetch("/change-profile", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await res.json();
+
+            if (result.success) {
+                showToast(result.message, "success");
+                // قفل کردن اینپوت‌ها
+                inputs.forEach(inp => {
+                    inp.setAttribute("readonly", "");
+                    inp.classList.remove("editing");
+                });
+                editBtn.style.display = "inline-flex";
+                saveBtn.style.display = "none";
+                cancelBtn.style.display = "none";
+            } else {
+                showToast(result.message || "خطایی رخ داد", "error");
+            }
+        } catch (err) {
+            showToast("خطا در شبکه!", "error");
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
+        }
+    };
 }
 
 // اجرا فقط وقتی محتوا لود شد
