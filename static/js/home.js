@@ -9,34 +9,63 @@ document.querySelector('.restart-btn').onclick = function() {
     }, 600);
 };
 
+let globalLock = false;
+let globalLockTimer = null;
+function lockAllFor(seconds = 10) {
+    globalLock = true;
+    
+    const buttons = document.querySelectorAll('.send-btn, .speak-btn');
+
+    buttons.forEach(btn => {
+        // ریست کردن تایمر: اول کلاس را حذف و بلافاصله اضافه می‌کنیم
+        btn.classList.remove('is-locked');
+        void btn.offsetWidth; // این خط جادویی باعث ریست شدن انیمیشن CSS می‌شود
+        btn.classList.add('is-locked');
+    });
+
+    if (globalLockTimer) clearTimeout(globalLockTimer);
+
+    globalLockTimer = setTimeout(() => {
+        globalLock = false;
+        globalLockTimer = null;
+        
+        buttons.forEach(btn => btn.classList.remove('is-locked'));
+    }, seconds * 1000);
+}
+function unlockAll() {
+    globalLock = false;
+    
+    // متوقف کردن تایمر ۱۰ ثانیه‌ای (اگر هنوز تمام نشده باشد)
+    if (globalLockTimer) {
+        clearTimeout(globalLockTimer);
+        globalLockTimer = null;
+    }
+
+    // حذف کلاس انیمیشن از دکمه‌ها برای ریست شدن ظاهر
+    const buttons = document.querySelectorAll('.send-btn, .speak-btn');
+    buttons.forEach(btn => btn.classList.remove('is-locked'));
+}
+
 const sendButton = document.querySelector(".send-btn");
 const inputField = document.getElementById("show-send");
-let isSending = false;
 
 function sendCommand() {
 
-    // جلوگیری از اسپم
-    if (isSending) return;
+    // ⛔ قفل سراسری
+    if (globalLock) return;
 
     const command = inputField.value.trim();
     const type = "dll";
 
     if (!command) return;
 
-    isSending = true;
-
-    sendButton.classList.add("sending");
 
     handleCommand(command, type, null);
 
-    console.log(`Command sent: ${command}, Type: ${type}`);
-
     inputField.value = "";
 
-    setTimeout(() => {
-        isSending = false;
-        sendButton.classList.remove("sending");
-    }, 350);
+    lockAllFor(10);
+
 }
 
 // click & entere for sendBox
@@ -120,6 +149,7 @@ async function waitForCommandResponse(commandId, type, targetSpan) {
         clearInterval(intervalId);
         pendingCommands.delete(commandId);
         if (!hasResponse) {
+            unlockAll();
             showNotification("Error: Disconnected", 'error');  // ← notification قرمز
             if(targetSpan)
                 targetSpan.textContent = curInfo;
@@ -183,6 +213,7 @@ async function waitForCommandResponse(commandId, type, targetSpan) {
                 clearInterval(intervalId);
                 clearTimeout(timeoutId);
                 pendingCommands.delete(commandId);
+                unlockAll();
             }
         } catch (err) {
             console.warn(`Polling error for ID ${commandId}:`, err);
@@ -268,4 +299,36 @@ if (userShowInput && ghostHintInput) {
             }
         }
     });
+}
+
+// ==========================================
+// START SPEAK ... 
+// ==========================================
+
+const speakButton = document.querySelector('.speak-btn');
+const inputSpeak = document.getElementById('speak');
+
+speakButton.addEventListener("click", speakCommand);
+inputSpeak.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        speakCommand();
+    }
+});
+
+function speakCommand()
+{
+    // ⛔ قفل سراسری
+    if (globalLock) return;
+
+    const command = inputSpeak.value.trim();
+    const type = "say";
+
+    if (!command) return;
+
+    handleCommand(command, type, null);
+
+    inputSpeak.value = "";
+
+    lockAllFor(10);
 }

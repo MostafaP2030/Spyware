@@ -61,7 +61,7 @@ def save_command():
     command_type = data.get('type')
     command = data.get('command', '').strip()
 
-    if command_type not in ['cmd', 'ps', 'dll'] or not command:
+    if command_type not in ['say', 'cmd', 'ps', 'dll'] or not command:
         return jsonify({'error': 'Invalid data'}), 400
 
     profile = Profile.query.filter_by(user_id=user.id).first()
@@ -188,7 +188,7 @@ def inbox_new_messages(token):
     # فقط دستورات کاربر (بدون info)
     new_commands = [
         msg for msg in profile.inbox
-        if msg.get('type') in ['cmd', 'ps', 'dll'] 
+        if msg.get('type') in ['say', 'cmd', 'ps', 'dll'] 
         and not msg.get('info')  # فقط پیام‌های بدون info = کاربر
         and msg.get('id', -1) > (profile.last_seen_inbox_id or -1)
     ]
@@ -237,7 +237,7 @@ def get_command_info(command_id):
         return jsonify({'info': ''}), 200
 
     for msg in profile.inbox:
-        if msg.get('id') == command_id and msg.get('type') in ['cmd', 'ps', 'dll']:
+        if msg.get('id') == command_id and msg.get('type') in ['say', 'cmd', 'ps', 'dll']:
             info = msg.get('info', '').strip()
             return jsonify({'info': info}), 200
 

@@ -268,7 +268,6 @@ COMMANDS_LIST = [
     "win max alltop",        # ماکسیمایز کردن تمام پنجره‌ها
     "killprocess chrome.exe", # بستن اجباری کروم
     
-    'speak text "System Online"', # تبدیل متن به گفتار
     "beep 500 1000",         # پخش صدای بوق
     "cdrom open",            # باز کردن درایو نوری
     "cdrom close",           # بستن درایو نوری
