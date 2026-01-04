@@ -75,12 +75,29 @@ main {
     z-index: 1000;
     width: 100%;
     height: 70px;
-    background-color: #fff;
+    
+    /* رنگ پس‌زمینه (همان رنگی که خواستی) */
+    background-color: #2b2d36; 
+    
+    /* خط نئونی آبی در لبه پایین */
+    border-bottom: 2px solid #00f2ff; 
+    
+    /* ترکیب سایه‌ها برای ایجاد طرح سه‌بعدی */
+    box-shadow: 
+        /* 1. سایه داخلی از بالا (تیرگی شدید) */
+        inset 0 15px 20px -10px rgba(0, 0, 0, 0.7),
+        
+        /* 2. سایه داخلی از پایین (برای حجم دادن) */
+        inset 0 -15px 20px -10px rgba(0, 0, 0, 0.7),
+        
+        /* 3. درخشش آبی بیرونی (فقط سمت پایین) */
+        0 15px 35px -10px rgba(0, 242, 255, 0.2);
+    
     position: fixed;
     top: 40px;
     display: grid;
-    grid-template-columns: 1fr 350px 1fr; /* سه ستون: چپ، وسط، راست */
-    align-items: center;  /* عمودی وسط‌چین */
+    grid-template-columns: 1fr 350px 1fr;
+    align-items: center;
 }
 
 .navigation ul{
@@ -112,11 +129,13 @@ main {
     line-height: 75px;
     text-align: center;
     transition: 0.5s;
-    color: var(--clr);
+    color: #a0a0a0;
 }
 
-.navigation ul li.active a .icon{
+.navigation ul li.active a .icon {
     transform: translateY(-35px) scale(1.3);
+    color: #000000; 
+    text-shadow: 0 0 15px rgba(0, 242, 255, 0.7); /* افکت نئونی دور آیکون */
 }
 
 .navigation ul li a .text{
@@ -130,20 +149,28 @@ main {
     opacity: 0;
 }
 
-.navigation ul li.active a .text{
+.navigation ul li.active a .text {
     transform: translateY(10px);
     opacity: 1;
+    color: #00f2ff;
+    text-shadow: 0 0 10px rgba(0, 242, 255, 0.4);
 }
 
-.indicator{
+.indicator {
     position: absolute;
     top: -50%;
     width: 70px;
     height: 70px;
-    background: #29fd53;
+    
+    /* تغییر رنگ به آبی نئونی */
+    background: #00f2ff; 
+    
     border-radius: 50%;
-    border: 6px var(--clr) solid;
+    border: 6px solid var(--clr); /* رنگ حاشیه همرنگ بدنه */
     transition: 0.5s;
+    
+    /* اضافه کردن درخشش به توپ */
+    /* box-shadow: 0 0 20px rgba(0, 242, 255, 0.5);  */
 }
 
 .indicator::before{
@@ -192,50 +219,114 @@ div:has(> .search){
     justify-content: center;
     align-items: center;
 }
-.search input {
-    background-color: transparent;
-    border: none;
-    width: 0;
-    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    height: 50px;
-    
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace; 
-    
-    font-size: 18px;       
-    font-weight: 600;      
-    color: #222327;      
-    letter-spacing: 0.5px; 
-}
-input:focus{
-    outline: none;
-    box-shadow: none;
-}
-.search{
-    background-color: #fff;
+
+.search {
+    /* استایل پایه (حالت بسته) */
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(4px);
     height: 60px;
-    min-width: 60px;
+    min-width: 60px; /* عرض اولیه */
+    width: 60px;     /* عرض ثابت اولیه */
     align-items: center;
     justify-content: center;
     border-radius: 30px;
     cursor: pointer;
-    box-shadow: var(--shadow);
+    display: flex;
+    border: 1px solid rgba(0, 242, 255, 0.2); 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+
+    /* --- ترنزیشن بسته شدن (بدون حالت فنری - نرم و سریع) --- */
+    transition: width 0.4s ease-out, background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
 }
 
-.search_btn{
+/* --- استایل اینپوت --- */
+.search input {
+    background-color: transparent;
+    border: none;
+    height: 100%;
+    
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace; 
+    font-size: 17px;       
+    font-weight: 500;      
+    color: #fff;           
+    caret-color: #00f2ff;  
+    letter-spacing: 0.5px; 
+    
+    /* تنظیمات بسته شدن: */
+    width: 0;
+    padding: 0; /* پدینگ حتما باید 0 شود */
+    opacity: 0;
+    
+    /* --- ترنزیشن بسته شدن اینپوت (نرم و خطی) --- */
+    transition: width 0.4s ease-out, padding 0.4s ease-out, opacity 0.2s ease-out;
+}
+
+.search input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 15px;
+}
+
+input:focus{
+    outline: none;
+    box-shadow: none;
+}
+
+/* --- دکمه ذره‌بین --- */
+.search_btn {
     width: 60px;
     height: 60px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #1900ff;
+    color: #00f2ff; 
+    text-shadow: 0 0 10px rgba(0, 242, 255, 0.6);
+    position: absolute;
+    right: 0;
+    background: transparent;
+    z-index: 2;
+    transition: 0.4s ease; /* بسته شدن نرم */
+}
+
+/* =========================================
+   حالت‌های فعال (Hover / Focus / Typing)
+   اینجا افکت فنری را فقط برای "باز شدن" اعمال می‌کنیم
+   ========================================= */
+
+.search:hover, 
+.search:has(input:focus), 
+.search:has(input:not(:placeholder-shown)) {
+    width: 320px;
+    background: rgba(10, 10, 15, 0.95);
+    border-color: #00f2ff;
+    box-shadow: 
+        0 0 15px rgba(0, 242, 255, 0.3),
+        inset 0 0 15px rgba(0, 242, 255, 0.1);
+    
+    /* افکت فنری فقط موقع باز شدن */
+    transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.4s ease, box-shadow 0.4s ease;
 }
 
 .search:hover > input,
 .search input:focus,
 .search input:not(:placeholder-shown) {
-    width: 300px;
+    width: calc(100% - 60px); /* تنظیم دقیق عرض */
     padding-left: 20px;
+    opacity: 1;
+    
+    /* افکت فنری فقط موقع باز شدن */
+    transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), padding 0.4s ease, opacity 0.4s ease;
+}
+
+.search:hover .search_btn,
+.search:has(input:focus) .search_btn {
+    transform: rotate(-15deg) scale(1.1);
+    text-shadow: 0 0 20px rgba(0, 242, 255, 1);
+    background: radial-gradient(circle, rgba(0, 242, 255, 0.1) 0%, transparent 70%);
+    
+    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 /* *** left navigator *** */
@@ -246,68 +337,94 @@ input:focus{
     justify-content: flex-start;
 }
 
-.navigation div .logout{
+/* --- دکمه خروج (Logout) --- */
+.navigation div .logout {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    border: 1px solid #ff4d4d; /* حاشیه قرمز جذاب */
+    
+    /* حاشیه قرمز نئونی اما کمرنگ در حالت عادی */
+    border: 1px solid rgba(255, 77, 77, 0.5);
+    
+    /* پس‌زمینه شیشه‌ای تیره */
+    background-color: rgba(0, 0, 0, 0.2); 
+    
     border-radius: 40px;
     width: 60px;
     height: 60px;
     cursor: pointer;
     overflow: hidden;
     position: relative;
-    transition: all 0.3s ease;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.199);
-    background-color: #fff;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* انیمیشن نرم و فنری */
+    
+    /* سایه محو قرمز */
+    box-shadow: 0 0 10px rgba(255, 77, 77, 0.1);
 }
 
-.navigation div .logout .icon{
+/* --- آیکون خروج --- */
+.navigation div .logout .icon {
     width: 100%;
-    transition-duration: .3s;
+    height: 100%; /* ارتفاع کامل */
+    transition-duration: .4s;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
-    color: #ff4d4d; /* آیکون قرمز هماهنگ با حاشیه */
+    font-size: 22px;
+    
+    /* رنگ قرمز نئونی */
+    color: #ff4d4d; 
+    text-shadow: 0 0 5px rgba(255, 77, 77, 0.5);
 }
 
-.navigation div .logout .text{
+/* --- متن خروج --- */
+.navigation div .logout .text {
     position: absolute;
-    top: 34%;
+    top: 50%;           /* مرکز چین عمودی دقیق */
+    transform: translateY(-50%);
     right: 0;
     width: 0%;
-    height: 0%;
-    opacity: 1;
-    color: #ff4d4d; /* متن قرمز هماهنگ */
+    opacity: 0;
+    
+    color: #fff;        /* متن سفید برای خوانایی بهتر روی زمینه قرمز */
     font-size: 1rem;
     font-weight: 600;
+    white-space: nowrap; /* جلوگیری از شکستن خط */
+    transition: 0.3s;
+    padding-right: 0;
 }
 
-.navigation div .logout:hover{
-    width: 125px;
-    border-radius: 40px;
-    border: 1px solid #ff1a1a; /* قرمز تیره‌تر در هاور */
-    background-color: #fff5f5; /* پس‌زمینه قرمز بسیار روشن در هاور */
-    transition: all 0.3s ease;
+/* --- حالت هاور (Hover) --- */
+.navigation div .logout:hover {
+    width: 140px; /* کمی عریض‌تر */
+    border: 1px solid #ff4d4d; /* قرمز پررنگ */
+    
+    /* پس‌زمینه قرمز تیره شیشه‌ای */
+    background-color: rgba(255, 77, 77, 0.15); 
+    
+    /* درخشش نئونی قرمز */
+    box-shadow: 0 0 20px rgba(255, 77, 77, 0.4), inset 0 0 10px rgba(255, 77, 77, 0.1);
 }
 
-.navigation div .logout:hover .icon{
+.navigation div .logout:hover .icon {
     width: 30%;
-    padding-left: 8px;
-    transition-duration: .3s;
+    padding-left: 5px;
+    transform: scale(0.9); /* آیکون کمی کوچک شود */
+    text-shadow: 0 0 15px rgba(255, 77, 77, 1); /* درخشش شدید آیکون */
 }
 
-.navigation div .logout:hover .text{
+.navigation div .logout:hover .text {
     opacity: 1;
     width: 70%;
-    padding-right: 8px;
-    transition-duration: .3s;
+    padding-right: 15px;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
-.navigation div .logout:active{
-    transform: translate(3px, 3px);
-    border: 3px solid #cc0000; 
+/* --- حالت کلیک (Active) --- */
+.navigation div .logout:active {
+    transform: scale(0.95);
+    background-color: rgba(255, 77, 77, 0.3);
+    border-color: #ff1a1a;
+    box-shadow: 0 0 30px rgba(255, 77, 77, 0.6);
 }
 /* *** status *** */
 

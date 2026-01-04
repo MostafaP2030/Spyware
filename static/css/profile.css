@@ -1,47 +1,49 @@
 :root{
-    --card-bg: #fff;
-    --muted: #6b6b6b;
-    --accent: #2b6cb0;
-    --radius: 14px;
+    /* --- تم دارک و متریال --- */
+    --card-bg: #2d2e33;    
+    --text-main: #e0e0e0; 
+    --text-muted: #9ca3af;
+    
+    --accent: #4da6ff;   
+    --accent-hover: #1e3a8a;
+
+    --border-color: rgba(255, 255, 255, 0.1);
+    
+    --radius: 16px;    
     --gap: 36px;
-    font-family: "Vazirmatn", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    
+    font-family: "Vazirmatn", system-ui, -apple-system, sans-serif;
 }
 
-
 /* کارت کلی */
-.card{
+.card {
     width: min(1100px, 92vw);
     height: min(700px, 75vh);
     background: var(--card-bg);
-    border:1px solid rgba(0,0,0,0.08);
-    border-radius:var(--radius);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
     padding: 50px 36px 36px 36px;
-    display:flex;
-    gap:var(--gap);
-    box-shadow: 0 6px 30px rgba(20,20,20,0.04);
-    overflow:auto;
+    display: flex;
+    gap: var(--gap);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); 
+    overflow: auto;
     margin: 0 auto;
-    direction:ltr; /* نگهداری چینش مشابه تصویر (آواتار سمت چپ) */
+    direction: ltr;
 }
 
 /* آواتار */
-.avatar{
-    width:260px;
-    height:260px;
-    border-radius:50%;
-    border:2px solid rgba(0,0,0,0.25);
-    background-color:#f7f7f8;
-    background-position:center;
-    background-size:cover;
-    flex-shrink:0;
-    position:relative;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-weight:700;
-    color:var(--muted);
-    font-size:28px;
-    /* overflow: hidden; */
+.avatar {
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    border: 4px solid #3a3b40; 
+    background-color: #374151;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
 }
 
 .avatar img {
@@ -52,13 +54,14 @@
     transition: 0.3s;
 }
 
+/* دکمه ویرایش روی آواتار */
 .avatar-edit-btn {
     position: absolute;
     bottom: 12px;
     right: 12px;
-    background: rgba(0,0,0,0.6);
-    width: 40px;
-    height: 40px;
+    background: rgba(45, 46, 51, 0.85); /* هماهنگ با تم */
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -66,111 +69,75 @@
     cursor: pointer;
     opacity: 0;
     transition: 0.3s;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
 }
 
 .avatar:hover .avatar-edit-btn {
     opacity: 1;
+    transform: translateY(-5px);
 }
 
 .avatar-edit-btn:hover {
-    background: rgba(0,0,0,0.8);
-}
-
-/* اگر avatar_url خالی باشه، یک آیکون ساده نشان داده می‌شود */
-.avatar.empty::after{
-    content: "";
-    width:88%;
-    height:88%;
-    border-radius:50%;
-    border:2px dashed rgba(0,0,0,0.06);
-    position:absolute;
+    background: var(--accent);
+    color: white;
 }
 
 /* اطلاعات */
-.info{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-    padding-top:22px;
-    width:100%;
-}
-
-.row{
-    display:flex;
-    gap:12px;
-    align-items:center;
-}
-
-.label{
-    min-width:70px;
-    font-weight:700;
-    color:var(--muted);
-    font-size:16px;
-}
-
-.value{
+.info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 22px;
     width: 100%;
-    color:#111;
-    font-size:16px;
-    word-break:break-all;
+    color: var(--text-main);
 }
 
-.url-box{
-    display:inline-flex;
-    align-items:center;
-    gap:10px;
-    border-radius:8px;
-    padding:8px 12px;
-    background:#fbfcfe;
-    border:1px solid rgba(0,0,0,0.04);
+.row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
 }
 
-.actions{
-    margin-top:18px;
-    display:flex;
-    gap:12px;
+.label {
+    min-width: 90px;
+    font-weight: 600;
+    color: var(--text-muted); 
+    font-size: 15px;
+    text-transform: capitalize; 
 }
 
-.btn{
-    padding:10px 14px;
-    border-radius:10px;
-    border: none;
-    cursor:pointer;
-    font-weight:600;
+.value {
+    width: 100%;
+    color: var(--text-main);
+    font-size: 16px;
 }
 
-.btn.primary{background:var(--accent); color:#fff}
-.btn.ghost{background:transparent; color:var(--accent); border:1px solid rgba(43,108,176,0.12)}
-
-/* responsiveness */
-@media (max-width:720px){
-    .card{flex-direction:column; align-items:center; height:auto; direction:rtl}
-    .avatar{width:180px;height:180px;margin-bottom:12px}
-    .label{min-width:70px}
-}
-
+/* باکس URL */
 .url-box {
     display: inline-flex;
     align-items: center;
     gap: 10px;
     border-radius: 8px;
-    padding: 7px 12px;
-    background: #fbfcfe;
-    border: 1px solid rgba(0,0,0,0.04);
+    padding: 10px 14px;
+    background: #25262b; 
+    border: 1px solid var(--border-color);
     cursor: pointer;
     user-select: none;
     transition: all 0.2s ease;
     position: relative;
+    max-width: 100%;
 }
 
 .url-box:hover {
-    background: #ebf4ff;
+    background: #1f2024;
     border-color: var(--accent);
 }
 
 .url-text {
-    color: var(--accent);
+    color: #7dd3fc;
+    font-family: 'Consolas', monospace; 
     font-size: 14px;
     word-break: break-all;
 }
@@ -179,124 +146,208 @@
     background: none;
     border: none;
     cursor: pointer;
-    padding: 4px;
+    padding: 6px;
     border-radius: 6px;
-    color: var(--muted);
-    opacity: 0.7;
+    color: var(--text-muted);
     transition: all 0.2s;
     display: flex;
     align-items: center;
 }
 
 .copy-btn:hover {
-    background: rgba(43,108,176,0.1);
-    opacity: 1;
-    color: var(--accent);
+    background: rgba(255,255,255,0.1);
+    color: #fff;
 }
 
-/* پیام "کپی شد" موقت */
-.url-box.copied::after {
-    content: "کپی شد!";
-    position: absolute;
-    top: -32px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #2d3748;
-    color: white;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 13px;
-    white-space: nowrap;
-    animation: fadeUp 2s forwards;
-}
-
-@keyframes fadeUp {
-    0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
-    20% { opacity: 1; transform: translateX(-50%) translateY(0); }
-    80% { opacity: 1; transform: translateX(-50%) translateY(0); }
-    100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
-}
-/* استایل اینپوت وقتی قابل ویرایش نیست */
+/* استایل اینپوت‌ها */
 .editable-input {
     width: 100%;
-    padding: 7px 10px;
+    padding: 10px 14px;
     border: 1px solid transparent;
     border-radius: 8px;
-    background: transparent;
-    font-size: 14px;
-    color: #111;
+    background: transparent; /* پس‌زمینه شفاف در حالت عادی */
+    font-size: 15px;
+    color: var(--text-main);
     outline: none;
     transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+/* وقتی فقط خواندنی است */
+.editable-input[readonly] {
+    cursor: default;
+    border-bottom: 1px solid rgba(255,255,255,0.05); /* خط زیرین خیلی محو */
+    border-radius: 0; 
+}
+.editable-input[readonly]:hover {
+    background: rgba(255,255,255,0.02);
 }
 
 /* وقتی حالت ویرایش فعال شد */
-.editable-input[readonly] {
-    cursor: default;
-}
-
 .editable-input:not([readonly]) {
     border: 1px solid var(--accent);
-    background: #f8faff;
+    background: #1f2024; /* پس‌زمینه تیره برای اینپوت */
+    color: #fff;
     cursor: text;
+    border-radius: 8px;
 }
 
 .editable-input:focus:not([readonly]) {
-    border-color: #1e40af;
-    box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.15);
+    box-shadow: 0 0 0 4px rgba(77, 166, 255, 0.15);
 }
 
-/* دکمه ذخیره — سبز پررنگ و جذاب */
-.btn.save-btn {
-    background: #16a34a;      /* سبز تیره‌تر و حرفه‌ای */
-    color: white;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
+/* دکمه‌ها */
+.actions {
+    margin-top: 25px;
+    display: flex;
+    gap: 12px;
 }
 
-.btn.save-btn:hover {
-    background: #15803d;
-}
-
-/* دکمه لغو — قرمز */
-.btn.cancel-btn {
-    background: #dc2626;      /* قرمز استاندارد */
-    color: white;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
+.btn {
+    padding: 10px 20px;
+    border-radius: 10px;
     border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+    font-size: 14px;
 }
 
+/* دکمه ویرایش اصلی (آبی) */
+.btn.primary {
+    background: var(--accent);
+    color: #0f172a; 
+}
+.btn.primary:hover {
+    background: #60a5fa;
+    box-shadow: 0 0 15px rgba(96, 165, 250, 0.4);
+}
+
+/* دکمه ذخیره (سبز نئونی) */
+.btn.save-btn {
+    background: #10b981; 
+    color: #064e3b;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.btn.save-btn:hover {
+    background: #34d399;
+    box-shadow: 0 0 15px rgba(52, 211, 153, 0.4);
+}
+
+/* دکمه لغو (قرمز روشن) */
+.btn.cancel-btn {
+    background: #ef4444;
+    color: #450a0a;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
 .btn.cancel-btn:hover {
-    background: #b91c1c;
+    background: #f87171;
+    box-shadow: 0 0 15px rgba(248, 113, 113, 0.4);
 }
 
-/* آیکون‌ها داخل دکمه‌ها */
-.btn.save-btn svg,
-.btn.cancel-btn svg {
+.btn svg {
     width: 18px;
     height: 18px;
 }
 
-#fullname{
+/* تایتل خوش‌آمدگویی */
+#fullname {
     position: absolute;
     top: -30px;
     width: 100%;
-
 }
 
-.welcome{
+.welcome {
     margin: auto;
-    font-size: 2rem;
-    font-weight: 900;
-    background: linear-gradient(90deg, #00ff88, #00ccff, #ff00aa, #00ff88);
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+
+    background: linear-gradient(90deg, #4da6ff, #29fd53); 
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    background-size: 300%;
-    animation: gradientFlow 6s ease infinite;
+    text-shadow: 0 0 30px rgba(77, 166, 255, 0.2);
 }
-@keyframes gradientFlow { 0%,100% { background-position: 0%; } 50% { background-position: 100%; } }
+
+/* ریسپانسیو */
+@media (max-width: 768px) {
+    .card {
+        flex-direction: column;
+        align-items: center;
+        height: auto;
+        padding-bottom: 80px; /* فضای پایین برای اسکرول موبایل */
+    }
+    
+    .avatar {
+        width: 160px;
+        height: 160px;
+        margin-bottom: 20px;
+        border-width: 3px;
+    }
+
+    .info {
+        padding-top: 0;
+        gap: 20px;
+    }
+    
+    .row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .label {
+        font-size: 13px;
+        opacity: 0.8;
+    }
+
+    #fullname {
+        position: static;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .welcome {
+        font-size: 1.5rem;
+    }
+    
+    .actions {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* انیمیشن برای پیام کپی */
+.url-box.copied::after {
+    content: "Copied!";
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #29fd53; 
+    color: #000;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    white-space: nowrap;
+    animation: fadeUp 1.5s forwards;
+    box-shadow: 0 0 10px rgba(41, 253, 83, 0.5);
+}
+
+@keyframes fadeUp {
+    0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+}
