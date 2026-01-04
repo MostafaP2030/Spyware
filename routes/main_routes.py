@@ -231,16 +231,47 @@ def receive_gallery_image(token):
     
     return jsonify({'status': 'success', 'message': 'Image updated'}), 200
 
-@main_bp.route('/setting')
-def setting():
-    user = get_current_user()
+@main_bp.route('/history')
+def history():
+    # user = get_current_user()
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({
-            'content': render_template('setting.html', user=user),
-            'css': ['/static/css/setting.css'],
-            'js': ['/static/js/setting.js']
+            'content': render_template('history.html'),
+            'css': ['/static/css/history.css'],
+            'js': ['/static/js/history.js']
         })
     return render_template('base.html')
+
+@main_bp.route('/api/history-log')
+def get_history_log():
+    user = get_current_user()
+    if not user or not user.profile:
+        return jsonify({'items': [], 'has_more': False}), 401
+    
+    page = request.args.get('page', 1, type=int)
+    per_page = 20
+    
+    # دریافت لیست کامل پیام‌ها
+    inbox_list = list(user.profile.inbox)
+    # معکوس کردن لیست برای نمایش جدیدترین‌ها در ابتدا
+    inbox_list.reverse()
+    
+    # محاسبات صفحه‌بندی
+    total_items = len(inbox_list)
+    start = (page - 1) * per_page
+    end = start + per_page
+    
+    # برش لیست (Slicing)
+    items = inbox_list[start:end]
+    
+    # بررسی اینکه آیا باز هم آیتمی مانده است یا نه
+    has_more = end < total_items
+    
+    return jsonify({
+        'items': items,     
+        'has_more': has_more, # آیا دکمه "بیشتر" نمایش داده شود؟
+        'page': page
+    })
 
 
 # ------------------------------------------------------------------
