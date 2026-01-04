@@ -1,11 +1,12 @@
 {
 let currentPage = 1;
 let isLoading = false;
+let currentSearchQuery = ""; // متغیر برای ذخیره متن جستجو
+let searchDebounceTimer; // تایمر برای بهینه‌سازی جستجو
 
 // تابع کمکی برای فرمت تاریخ به شمسی
 function formatPersianDate(timestamp) {
     if (!timestamp) return '';
-    // پایتون time.time() ثانیه می‌دهد، جاوااسکریپت میلی‌ثانیه می‌خواهد (ضرب در 1000)
     const date = new Date(timestamp * 1000);
     return date.toLocaleString('fa-IR', {
         year: 'numeric',
@@ -29,28 +30,38 @@ function loadHistory(page) {
     isLoading = true;
     spinner.style.display = 'block';
     if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+    
+    // اگر جستجو جدید است یا صفحه ۱ است و لیست خالی نیست، پیام خالی بودن را مخفی کن
+    if (page === 1) {
+            noDataMsg.style.display = 'none';
+    }
 
-    fetch(`/api/history-log?page=${page}`)
+    // اضافه کردن کوئری جستجو به URL
+    const url = `/api/history-log?page=${page}&q=${encodeURIComponent(currentSearchQuery)}`;
+
+    fetch(url)
         .then(response => response.json())
         .then(data => {
             spinner.style.display = 'none';
             isLoading = false;
 
-            if (data.items.length === 0 && page === 1) {
-                noDataMsg.style.display = 'block';
-                return;
-            }
-
-            // اگر صفحه ۱ است، لیست قبلی را پاک کن (برای جلوگیری از تکرار هنگام رفت و برگشت)
+            // پاک کردن لیست فقط اگر صفحه ۱ باشد
             if (page === 1) {
                 listContainer.innerHTML = '';
+            }
+
+            if (data.items.length === 0 && page === 1) {
+                noDataMsg.innerText = currentSearchQuery ? "No results found 🔍" : "History is empty 🔍";
+                noDataMsg.style.display = 'block';
+                // اگر دکمه لود بیشتر وجود داشت مخفی شود
+                if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+                return;
             }
 
             data.items.forEach(item => {
                 const li = document.createElement('li');
                 li.className = 'history-item';
                 
-                // تعیین رنگ بر اساس نوع دستور (اختیاری)
                 let typeClass = 'type-default';
                 if (item.type === 'cmd') typeClass = 'type-cmd';
                 else if (item.type === 'ps') typeClass = 'type-ps';
@@ -85,6 +96,10 @@ function loadHistory(page) {
             currentPage = page;
 
             if (loadMoreBtn) {
+                // حذف پیام پایان قبلی اگر وجود دارد
+                const oldEndMsg = listContainer.querySelector('.end-message');
+                if(oldEndMsg) oldEndMsg.remove();
+
                 if (data.has_more) {
                     loadMoreBtn.style.display = 'block';
                 } else {
@@ -109,24 +124,56 @@ function initHistoryPage() {
     const list = document.getElementById('history-list');
     
     if (list) {
+        // ریست کردن متغیرها هنگام ورود به صفحه
         currentPage = 1;
+        currentSearchQuery = "";
+        
+        const searchInput = document.querySelector('#search input');
+        
+        if (searchInput) {
+            searchInput.value = "";
+            
+            // حذف ایونت‌های قبلی (برای جلوگیری از تکرار)
+            const newSearchInput = searchInput.cloneNode(true);
+            searchInput.parentNode.replaceChild(newSearchInput, searchInput);
+
+            // اضافه کردن لیسنر جدید
+            newSearchInput.addEventListener('input', function(e) {
+                const val = e.target.value.trim();
+                
+                // استفاده از Debounce برای جلوگیری از درخواست‌های رگباری
+                clearTimeout(searchDebounceTimer);
+                searchDebounceTimer = setTimeout(() => {
+                    currentSearchQuery = val;
+                    currentPage = 1;
+                    loadHistory(1);
+                }, 500);
+            });
+            
+            // اگر کاربر Enter زد، فوری جستجو کن
+            newSearchInput.addEventListener('keydown', function(e){
+                    if(e.key === 'Enter'){
+                    clearTimeout(searchDebounceTimer);
+                    currentSearchQuery = e.target.value.trim();
+                    currentPage = 1;
+                    loadHistory(1);
+                    }
+            });
+        }
+
         loadHistory(1);
         
-        // تنظیم دکمه
         const loadMoreBtn = document.getElementById('load-more-btn');
         if (loadMoreBtn) {
-            // استفاده از onclick برای جلوگیری از چندبار ایونت خوردن
             loadMoreBtn.onclick = function() {
                 if (!isLoading) loadHistory(currentPage + 1);
             };
         }
     }
 }
+
 initHistoryPage();
 document.addEventListener("pageContentLoaded", initHistoryPage);
-
-
-
 
 
 }

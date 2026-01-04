@@ -233,12 +233,12 @@ def receive_gallery_image(token):
 
 @main_bp.route('/history')
 def history():
-    # user = get_current_user()
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({
             'content': render_template('history.html'),
             'css': ['/static/css/history.css'],
-            'js': ['/static/js/history.js']
+            'js': ['/static/js/history.js'],
+            'search' : True
         })
     return render_template('base.html')
 
@@ -249,19 +249,30 @@ def get_history_log():
         return jsonify({'items': [], 'has_more': False}), 401
     
     page = request.args.get('page', 1, type=int)
+    search_query = request.args.get('q', '').lower().strip()  
     per_page = 20
     
-    # دریافت لیست کامل پیام‌ها
     inbox_list = list(user.profile.inbox)
-    # معکوس کردن لیست برای نمایش جدیدترین‌ها در ابتدا
     inbox_list.reverse()
+
+    # --- شروع بخش فیلتر جستجو ---
+    if search_query:
+        filtered_list = []
+        for item in inbox_list:
+            msg = str(item.get('msg', '')).lower()
+            info = str(item.get('info', '')).lower()
+            typ = str(item.get('type', '')).lower()
+            
+            if search_query in msg or search_query in info or search_query in typ:
+                filtered_list.append(item)
+        inbox_list = filtered_list
+    # --- پایان بخش فیلتر جستجو ---
     
     # محاسبات صفحه‌بندی
     total_items = len(inbox_list)
     start = (page - 1) * per_page
     end = start + per_page
     
-    # برش لیست (Slicing)
     items = inbox_list[start:end]
     
     # بررسی اینکه آیا باز هم آیتمی مانده است یا نه
@@ -269,7 +280,7 @@ def get_history_log():
     
     return jsonify({
         'items': items,     
-        'has_more': has_more, # آیا دکمه "بیشتر" نمایش داده شود؟
+        'has_more': has_more, 
         'page': page
     })
 

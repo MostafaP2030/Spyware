@@ -190,3 +190,15 @@
 .btn-load-more:active {
     transform: translateY(0);
 }
+ /* ****************************************** */
+#no-data-msg {
+    text-align: center;
+    color: #29fd53; 
+    font-weight: bold;
+    font-size: 1.5rem; 
+    background: transparent; 
+    border: none; 
+    margin-top: 40px;
+    text-shadow: 0 0 15px rgba(41, 253, 83, 0.4); 
+    font-family: sans-serif;
+}

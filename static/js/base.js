@@ -3,8 +3,10 @@ const icon = document.querySelector(".status .icon");
 const anime = document.querySelector(".status .anime");
 const mainContent = document.querySelector("main");
 const listItems = document.querySelectorAll(".list");
+let search;
 
 window.addEventListener('load', function() {
+    search = document.getElementById('search');
     const loader = document.querySelector('.loader');
     const content = document.querySelector('.content');
 
@@ -67,6 +69,10 @@ function loadPage(url) {
             window.location.href = data.redirect;
             return;
         }
+        if(data.search)
+            search.style.display = "flex";
+        else 
+            search.style.display = "none";
 
         if (typeof data === 'object' && data.status === 'unauthenticated') {
             window.location.href = data.redirect;
