@@ -4,19 +4,30 @@ document.querySelector('.power-btn').onclick = function() {
     this.classList.toggle('on');
 };
 
-document.querySelector('.restart-btn').onclick = function() {
-    this.querySelector('i').classList.add('spin');
-    setTimeout(() => {
-        this.querySelector('i').classList.remove('spin');
-    }, 600);
-};
+document.querySelectorAll('.retry-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const icon = this.querySelector('i'); // انتخاب آیکون داخل دکمه
+
+        // ریست کردن انیمیشن
+        icon.classList.remove('spin');
+        void icon.offsetWidth; // Force Reflow
+        
+        // شروع چرخش
+        icon.classList.add('spin');
+
+        // پایان چرخش بعد از ۶۰۰ میلی‌ثانیه
+        setTimeout(() => {
+            icon.classList.remove('spin');
+        }, 600);
+    });
+});
 
 let globalLock = false;
 let globalLockTimer = null;
 function lockAllFor(seconds = 10) {
     globalLock = true;
     
-    const buttons = document.querySelectorAll('.send-btn, .speak-btn');
+    const buttons = document.querySelectorAll('.btn, .retry-btn, .send-btn, .speak-btn');
 
     buttons.forEach(btn => {
         // ریست کردن تایمر: اول کلاس را حذف و بلافاصله اضافه می‌کنیم
@@ -28,10 +39,7 @@ function lockAllFor(seconds = 10) {
     if (globalLockTimer) clearTimeout(globalLockTimer);
 
     globalLockTimer = setTimeout(() => {
-        globalLock = false;
-        globalLockTimer = null;
-        
-        buttons.forEach(btn => btn.classList.remove('is-locked'));
+        unlockAll();
     }, seconds * 1000);
 }
 function unlockAll() {
@@ -44,7 +52,7 @@ function unlockAll() {
     }
 
     // حذف کلاس انیمیشن از دکمه‌ها برای ریست شدن ظاهر
-    const buttons = document.querySelectorAll('.send-btn, .speak-btn');
+    const buttons = document.querySelectorAll('.btn, .retry-btn, .send-btn, .speak-btn');
     buttons.forEach(btn => btn.classList.remove('is-locked'));
 }
 
@@ -82,6 +90,7 @@ inputField.addEventListener("keydown", function(e) {
 const infoContainer = document.querySelector('.info-container');
 
 infoContainer.addEventListener('click', function(e) {
+    if (globalLock) return;
     const btn = e.target.closest('.retry-btn');
     if (!btn) return;
 
@@ -90,6 +99,7 @@ infoContainer.addEventListener('click', function(e) {
     const targetSpan = btn.closest('.info-box').querySelector('.information');
 
     if (command && type) {
+        lockAllFor(10);
         console.log(`Command sent: ${command}, Type: ${type}`);
         handleCommand(command, type, targetSpan);
     }
@@ -99,6 +109,7 @@ infoContainer.addEventListener('click', function(e) {
 const buttonContainer = document.querySelector('.button-container');
 
 buttonContainer.addEventListener('click', function(e) {
+    if (globalLock) return;
     const btn = e.target.closest('.btn');
     if (!btn) return;
 
@@ -106,6 +117,7 @@ buttonContainer.addEventListener('click', function(e) {
     const type = btn.dataset.type;
 
     if (command && type) {
+        lockAllFor(10);
         console.log(`Command sent: ${command}, Type: ${type}`);
         handleCommand(command, type, null);
     }

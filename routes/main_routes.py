@@ -1,6 +1,6 @@
 from flask import (
     Blueprint, render_template, jsonify, request, session,
-    send_from_directory, redirect, url_for, current_app, flash
+    send_from_directory, redirect, current_app
 )
 from ..models import User, Profile, db
 from werkzeug.utils import secure_filename
@@ -10,7 +10,7 @@ import time
 
 # تنظیمات آپلود
 ALLOWED_EXT = {'png', 'jpg', 'jpeg', 'webp', 'gif'}
-MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5 مگابایت (اختیاری برای امنیت بیشتر)
+MAX_CONTENT_LENGTH = 5 * 1024 * 1024 
 
 main_bp = Blueprint('main', __name__, template_folder='templates')
 
@@ -70,15 +70,32 @@ def require_login():
 @main_bp.route('/')
 def index():
     user = get_current_user()
+    
+    # دریافت اطلاعات سیستم (دقیقاً مثل تابع home)
+    system_info = {}
+    if user and user.profile and user.profile.main_info:
+        system_info = user.profile.main_info
+
+    # 1. اگر درخواست AJAX بود
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({
-            'content': render_template('home.html', user=user),
+            'content': render_template('home.html', user=user, system_info=system_info),
             'css': ['/static/css/home.css'],
-            'js': ['/static/js/home.js']
+            'js': ['/static/js/home.js'],
+            'initial_route': '/home' # مسیر را home تنظیم می‌کنیم تا منو روشن شود
         })
-    return render_template('base.html')
 
-
+    # 2. اگر درخواست معمولی بود (ورود اولیه به ریشه سایت)
+    # محتوای home.html را رندر می‌کنیم
+    content_html = render_template('home.html', user=user, system_info=system_info)
+    
+    # و به base.html می‌فرستیم
+    return render_template('base.html',
+                           content=content_html,
+                           extra_css=['/static/css/home.css'],
+                           extra_js=['/static/js/home.js'],
+                           initial_route='/home') # این باعث می‌شود دکمه Home در منو فعال شود
+    
 @main_bp.route('/home')
 def home():
     user = get_current_user()
@@ -91,10 +108,16 @@ def home():
         return jsonify({
             'content': render_template('home.html', user=user, system_info=system_info),
             'css': ['/static/css/home.css'],
-            'js': ['/static/js/home.js']
+            'js': ['/static/js/home.js'],
+            'initial_route': '/home'
         })
-    return render_template('base.html')
 
+    content_html = render_template('home.html', user=user, system_info=system_info)
+    
+    return render_template('base.html', 
+                           content=content_html, 
+                           extra_css=['/static/css/home.css'],
+                           extra_js=['/static/js/home.js'])
 
 
 @main_bp.route('/save-system-info', methods=['POST'])
@@ -131,40 +154,61 @@ def profile():
     if not user:
         return redirect('/form')
 
-    profile = Profile.query.filter_by(user_id=user.id).first()
-    if not profile:
+    user_profile = Profile.query.filter_by(user_id=user.id).first()
+    if not user_profile:
         return redirect('/form')
 
-    url = f"http://127.0.0.1:5000/api/user/{profile.inbox_token}/inbox"
+    # متغیرهای مشترک که هم برای AJAX لازم است هم برای رفرش
+    context = {
+        'token': user_profile.inbox_token,
+        'ip_port': "http://127.0.0.1:5000",
+        'fullname': user_profile.fullname,
+        'username': user.username,
+        'password': user.password,
+        'email': user_profile.email,
+        'profile': user_profile
+    }
 
+    # 1. درخواست AJAX (سوییچ صفحات)
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({
-            'content': render_template(
-                'profile.html',
-                url=url,
-                fullname = profile.fullname,
-                username=user.username,
-                password=user.password,
-                email=profile.email,
-                profile=profile  # برای دسترسی به inbox_token در JS
-            ),
+            'content': render_template('profile.html', **context),
             'css': ['/static/css/profile.css'],
-            'js': ['/static/js/profile.js']
+            'js': ['/static/js/profile.js'],
+            'initial_route': '/profile'
         })
-    return render_template('base.html')
 
+    # 2. درخواست رفرش (Refresh) - اصلاح شده
+    content_html = render_template('profile.html', **context)
+    
+    return render_template('base.html',
+                           content=content_html,
+                           extra_css=['/static/css/profile.css'],
+                           extra_js=['/static/js/profile.js'],
+                           initial_route='/profile')
 
 @main_bp.route('/gallery')
 def gallery():
     user = get_current_user()
+    
+    # 1. درخواست AJAX
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({
             'content': render_template('gallery.html', user=user),
             'css': ['/static/css/gallery.css'],
-            'js': ['/static/js/gallery.js']
+            'js': ['/static/js/gallery.js'],
+            'initial_route': '/gallery'
         })
-    return render_template('base.html')
 
+    # 2. درخواست رفرش (Refresh) - اصلاح شده
+    content_html = render_template('gallery.html', user=user)
+    
+    return render_template('base.html',
+                           content=content_html,
+                           extra_css=['/static/css/gallery.css'],
+                           extra_js=['/static/js/gallery.js'],
+                           initial_route='/gallery')
+    
 @main_bp.route('/get-latest-image')
 def get_latest_image():
     user = get_current_user()
@@ -233,15 +277,25 @@ def receive_gallery_image(token):
 
 @main_bp.route('/history')
 def history():
+    # 1. درخواست AJAX
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({
             'content': render_template('history.html'),
             'css': ['/static/css/history.css'],
             'js': ['/static/js/history.js'],
-            'search' : True
+            'search': True,
+            'initial_route': '/history'
         })
-    return render_template('base.html')
-
+    
+    # 2. درخواست رفرش (Refresh) - اصلاح شده
+    content_html = render_template('history.html')
+    
+    return render_template('base.html',
+                           content=content_html,
+                           extra_css=['/static/css/history.css'],
+                           extra_js=['/static/js/history.js'],
+                           initial_route='/history')
+    
 @main_bp.route('/api/history-log')
 def get_history_log():
     user = get_current_user()

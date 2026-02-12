@@ -1,7 +1,5 @@
 {
 let Route = window.currentRoutePrompt || "C:\\User>";
-let lastCmdCommand = "";
-let lastPsCommand = "";
 
 const INTERNAL_COMMANDS = ['clear', 'about', 'cls', 'clear'];
 
@@ -183,7 +181,6 @@ async function waitForCommandResponse(commandId, type, outputLine) {
             clearInterval(intervalId);
             clearTimeout(timeoutId);
             pendingCommands.delete(commandId);
-            //
             addNewInput(terminal, type);
             return;
         }
@@ -205,9 +202,7 @@ async function waitForCommandResponse(commandId, type, outputLine) {
                 } 
                 // خروجی عادی (مثل dir یا خطای cd)
                 let options = {};
-                if (info.includes("The system cannot find the path specified.") ||
-                    info.includes("Error ") && info.includes("Cannot change directory") ||
-                    info.includes("<error>")) {
+                if (info.includes("<error>")) {
                     options = { color: "#ff4444", weight: "bold" };  // قرمز برای خطا
                 }
                 displayInfo(outputLine, info, options);
@@ -228,10 +223,10 @@ async function waitForCommandResponse(commandId, type, outputLine) {
 
 function displayInfo(outputLine, info, options = {}) {
     const {
-        color = '#4CAF50',       // رنگ پیش‌فرض
-        size = '14px',           // سایز پیش‌فرض
-        font = 'monospace',      // فونت پیش‌فرض
-        weight = 'bold'          // وزن فونت پیش‌فرض
+        color = '#4CAF50',    
+        size = '14px',          
+        font = 'monospace',      
+        weight = 'bold'      
     } = options;
 
     // حذف نوشته "Waiting..."
@@ -255,8 +250,6 @@ function displayInfo(outputLine, info, options = {}) {
     infoSpan.style.fontFamily = font;
     infoSpan.style.fontWeight = weight;
 
-    // تبدیل \n به <br> برای خروجی چندخطی درست (مثل dir)
-    // infoSpan.innerHTML = info.replace(/\n/g, '<br>').replace(/\r/g, '');
     infoSpan.textContent = info;
 }
 

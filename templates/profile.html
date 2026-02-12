@@ -56,9 +56,22 @@
       </div>
 
       <div class="row">
-        <div class="label">URL:</div>
-        <div class="value url-box" id="urlBox">
-          <span class="url-text">{{ url or '-' }}</span>
+        <div class="label">Token:</div>
+        <div class="value url-box" id="token-box">
+          <span class="url-text">{{ token or '-' }}</span>
+          <button class="copy-btn" title="کپی لینک">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="label">IP_Port:</div>
+        <div class="value url-box" id="ip_port-Box">
+          <span class="url-text">{{ ip_port or '-' }}</span>
           <button class="copy-btn" title="کپی لینک">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -69,7 +82,7 @@
       </div>
 
       <div class="actions">
-        <button class="btn primary" id="editBtn">ویرایش پروفایل</button>
+        <button class="btn primary" id="editBtn">Edit</button>
         
         <!-- دکمه لغو — قرمز -->
         <button class="btn cancel-btn" id="cancelBtn" style="display:none">
@@ -78,7 +91,7 @@
             <line x1="15" y1="9" x2="9" y2="15"></line>
             <line x1="9" y1="9" x2="15" y2="15"></line>
           </svg>
-          لغو
+          Cancel
         </button>
         
         <!-- دکمه ذخیره — سبز -->
@@ -88,7 +101,7 @@
             <polyline points="17 21 17 13 7 13 7 21"></polyline>
             <polyline points="7 3 7 8 15 8"></polyline>
           </svg>
-          ذخیره تغییرات
+          Save
         </button>
         
         

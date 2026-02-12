@@ -98,7 +98,6 @@ h2 {
   background-color: #222;
 }
 
-/* ———— اسکرول‌بار ترمینال رو کاملاً با تم هماهنگ و شیک کن ———— */
 .terminal::-webkit-scrollbar {
     width: 12px;                     /* عرض اسکرول‌بار */
 }

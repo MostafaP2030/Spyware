@@ -1,10 +1,7 @@
 .container-gallery {
-    /* width: 80%; */
-    /* height: 100%; ارتفاع کل صفحه */
     display: flex;
     align-items: center;
     justify-content: center;
-    /* background-color: #00ffcc; */
 }
 
 /* wrapper */
@@ -43,11 +40,9 @@
 }
 
 /* --- حالت روشن (ON) --- */
-/* وقتی کلاس on اضافه شود، دکمه به بالا سمت چپ می‌رود */
 .power-wrapper.on {
-    top: 75px;  /* فاصله از بالا */
-    left: -40px; /* فاصله از چپ */
-    /* translate(0,0) آفست مرکز را خنثی می‌کند و scale آن را کوچک می‌کند */
+    top: 75px;  
+    left: -40px; 
     transform: scale(0.4); 
 }
 
@@ -107,6 +102,7 @@
 
 /* کانتینر مانیتور (قاب سیاه) */
 .monitor-display {
+    aspect-ratio: 16/9;
     position: absolute;
     top: 60%;
     left: 50%;
@@ -114,8 +110,8 @@
     
     /* تنظیم سایز قاب مانیتور نسبت به صفحه */
     width: 80%;  /* عرض ۸۰ درصد صفحه */
-    height: 80%; /* ارتفاع ۷۰ درصد صفحه */
-    max-width: 1000px; /* حداکثر عرض (برای مانیتورهای خیلی بزرگ) */
+    height: auto; /* ارتفاع ۷۰ درصد صفحه */
+    max-width: 1000px; 
     
     border: 2px solid #333;
     background: #000; /* رنگ پس‌زمینه سیاه برای فضاهای خالی */
@@ -131,7 +127,6 @@
     
     /* انیمیشن ظاهر شدن */
     opacity: 0;
-    /* transition: opacity 0.1s ease 0.5s; */
 }
 
 .monitor-display.active {
@@ -140,14 +135,13 @@
 
 /* تنظیمات خود عکس */
 .monitor-display img {
-    /* عکس تمام فضای کانتینر را می‌گیرد اما... */
-    width: 100%;
-    height: 100%;
     
-    /* ...این خط مهم‌ترین بخش است: */
-    object-fit: contain; /* عکس را کوچک کن تا کامل دیده شود (نسبت تصویر حفظ می‌شود) */
-    
-    display: none; /* توسط JS وقتی لود شد block می‌شود */
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: none;
 }
 
 .loading-text {
@@ -158,8 +152,7 @@
     animation: blink 1s infinite;
     pointer-events: none;
 }
-
-/* // =============================== */
+/* *** Notification *** */
 .notification {
     position: fixed;
     top: 100px;                    /* شروع از بیرون صفحه */

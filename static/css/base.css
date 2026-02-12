@@ -6,7 +6,6 @@
 
 :root{
     --clr: #222327;
-    --shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 body{
@@ -37,31 +36,45 @@ main {
     top: 0;
     box-shadow: 0 4px 20px #747474;
 }
-/* HTML: <div class="loader"></div> */
+/* ******* LOADER *************** */
 .loader {
-  width: 50px;
-  aspect-ratio: 1;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2000;     
+  
+
+  height: 15px;
+  aspect-ratio: 4;
+  --_g: no-repeat radial-gradient(farthest-side,#2b2d36 90%,#222327);
+  background: 
+    var(--_g) left, 
+    var(--_g) right;
+  background-size: 25% 100%;
   display: grid;
-  border: 4px solid #0000;
-  border-radius: 50%;
-  border-right-color: #25b09b;
-  animation: l15 1s infinite linear;
 }
-.loader::before,
-.loader::after {    
+.loader:before,
+.loader:after {
   content: "";
+  height: inherit;
+  aspect-ratio: 1;
   grid-area: 1/1;
-  margin: 2px;
-  border: inherit;
+  margin: auto;
   border-radius: 50%;
-  animation: l15 2s infinite;
+  transform-origin: -100% 50%;
+  background: #2b2d36;
+  animation: l49 1s infinite linear;
 }
-.loader::after {
-  margin: 8px;
-  animation-duration: 3s;
+.loader:after {
+  transform-origin: 200% 50%;
+  --s:-1;
+  animation-delay: -.5s;
 }
-@keyframes l15{ 
-  100%{transform: rotate(1turn)}
+
+@keyframes l49 {
+  58%,
+  100% {transform: rotate(calc(var(--s,1)*1turn))}
 }
 
 /* ********************************** */
@@ -76,7 +89,6 @@ main {
     width: 100%;
     height: 70px;
     
-    /* رنگ پس‌زمینه (همان رنگی که خواستی) */
     background-color: #2b2d36; 
     
     /* خط نئونی آبی در لبه پایین */
@@ -84,13 +96,12 @@ main {
     
     /* ترکیب سایه‌ها برای ایجاد طرح سه‌بعدی */
     box-shadow: 
-        /* 1. سایه داخلی از بالا (تیرگی شدید) */
-        inset 0 15px 20px -10px rgba(0, 0, 0, 0.7),
+        /* 1. سایه داخلی از بالا  */
+        inset 0 15px 10px -10px rgba(0, 242, 255, 0.2),
         
-        /* 2. سایه داخلی از پایین (برای حجم دادن) */
-        inset 0 -15px 20px -10px rgba(0, 0, 0, 0.7),
+        /* 2. سایه داخلی از پایین  */
+        inset 0 -15px 10px -10px rgba(0, 242, 255, 0.2),
         
-        /* 3. درخشش آبی بیرونی (فقط سمت پایین) */
         0 15px 35px -10px rgba(0, 242, 255, 0.2);
     
     position: fixed;
@@ -168,9 +179,6 @@ main {
     border-radius: 50%;
     border: 6px solid var(--clr); /* رنگ حاشیه همرنگ بدنه */
     transition: 0.5s;
-    
-    /* اضافه کردن درخشش به توپ */
-    /* box-shadow: 0 0 20px rgba(0, 242, 255, 0.5);  */
 }
 
 .indicator::before{
@@ -231,11 +239,12 @@ div:has(> .search){
     justify-content: center;
     border-radius: 30px;
     cursor: pointer;
-    display: flex;
+    display: none;
     border: 1px solid rgba(0, 242, 255, 0.2); 
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     position: relative;
     overflow: hidden;
+    
 
     /* --- ترنزیشن بسته شدن (بدون حالت فنری - نرم و سریع) --- */
     transition: width 0.4s ease-out, background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
@@ -253,10 +262,9 @@ div:has(> .search){
     color: #fff;           
     caret-color: #00f2ff;  
     letter-spacing: 0.5px; 
-    
     /* تنظیمات بسته شدن: */
     width: 0;
-    padding: 0; /* پدینگ حتما باید 0 شود */
+    padding: 0;
     opacity: 0;
     
     /* --- ترنزیشن بسته شدن اینپوت (نرم و خطی) --- */
@@ -273,7 +281,7 @@ input:focus{
     box-shadow: none;
 }
 
-/* --- دکمه ذره‌بین --- */
+/* *** Search *** */
 .search_btn {
     width: 60px;
     height: 60px;
@@ -292,7 +300,6 @@ input:focus{
 
 /* =========================================
    حالت‌های فعال (Hover / Focus / Typing)
-   اینجا افکت فنری را فقط برای "باز شدن" اعمال می‌کنیم
    ========================================= */
 
 .search:hover, 
@@ -379,13 +386,13 @@ input:focus{
 /* --- متن خروج --- */
 .navigation div .logout .text {
     position: absolute;
-    top: 50%;           /* مرکز چین عمودی دقیق */
+    top: 50%;         
     transform: translateY(-50%);
     right: 0;
     width: 0%;
     opacity: 0;
     
-    color: #fff;        /* متن سفید برای خوانایی بهتر روی زمینه قرمز */
+    color: #fff;       
     font-size: 1rem;
     font-weight: 600;
     white-space: nowrap; /* جلوگیری از شکستن خط */

@@ -8,8 +8,6 @@ auth_bp = Blueprint('auth', __name__)
 def form():
     return render_template('form.html')
 
-
-
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
     username = request.form.get('username', 'no name')

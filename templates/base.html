@@ -14,6 +14,11 @@
     {% block extra_css %}{% endblock %}
                         
     <script src="https://kit.fontawesome.com/767fb6f547.js" crossorigin="anonymous"></script>
+    {% if extra_css %}
+        {% for css in extra_css %}
+            <link rel="stylesheet" href="{{ css }}" data-page-specific="true">
+        {% endfor %}
+    {% endif %}
 </head>
 
 <body>
@@ -100,6 +105,10 @@
     
     <script src="/static/js/base.js"></script>
     <script src="/static/js/terminal.js"></script>
-    {% block extra_js %}{% endblock %}
+    {% if extra_js %}
+        {% for js in extra_js %}
+            <script src="{{ js }}" data-page-specific="true"></script>
+        {% endfor %}
+    {% endif %}
 </body>
 </html>

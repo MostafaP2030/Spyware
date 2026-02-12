@@ -41,9 +41,7 @@
   }
 }
 
-/* ===============================
-   Layout
-=================================*/
+
 .info-container{
     display: grid;
     grid-template-columns: repeat(2, auto); /* حالت بزرگ: همه کنار هم */
@@ -51,7 +49,6 @@
     gap: 20px;
     justify-content: center;
     align-items: start; /* آیتم‌ها از بالا شروع میشن */
-    /* height: 400px; */
     margin-bottom: 50px;
 }
 
@@ -235,7 +232,6 @@
 /* باکس با بکگراند شفاف و خط پایین روی پس‌زمینه */
 .info-box {
     display: flex;
-    /* width: 300px; */
     justify-content: space-between;
     align-items: center;
     padding: 12px 16px;
@@ -299,8 +295,7 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     background: linear-gradient(135deg, #388E3C, #66BB6A);
 }
-
-/* // =============================== */
+/* *** Notification *** */
 .notification {
     position: fixed;
     top: 100px;                    /* شروع از بیرون صفحه */
@@ -361,7 +356,6 @@ Send box
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(6px);
     border-radius: 25px;
-    /* padding را حذف کردیم و به خود اینپوت‌ها می‌دهیم تا تراز شوند */
     padding: 0; 
     display: flex;
     align-items: center;
@@ -401,7 +395,6 @@ Send box
 #show-send {
     z-index: 2;
     color: #fff; /* رنگ متن اصلی */
-    /* بک‌گراند شفاف است تا زیری دیده شود */
 }
 
 /* دکمه ارسال */
@@ -426,7 +419,6 @@ Send box
 
 }
 
-/* هاور زیبا */
 .send-btn:hover {
     background: rgba(255,255,255,0.22);
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
@@ -566,8 +558,6 @@ Speak button
 .speak-btn:active i {
     transform: rotate(-15deg) scale(1.1);
 }
-/* //////////////////////////// */
-
 
 /* ایجاد لایه تایمر بدون تغییر در پوزیشن اصلی دکمه */
 .send-btn, .speak-btn {
@@ -616,4 +606,80 @@ Speak button
 @keyframes pulseLockSpeak {
     from { transform: scale(1); opacity: 0.7; }
     to { transform: scale(1.1); opacity: 1; }
+}
+
+/* ==========================================
+   GLOBAL LOCK STYLES
+========================================== */
+
+/* ==========================================
+   USER FRIENDLY LOCK STYLES
+========================================== */
+
+/* استایل پایه دکمه در حالت قفل */
+.btn.is-locked, 
+.retry-btn.is-locked
+{
+    position: relative;
+    overflow: hidden;
+    
+    /* تغییر نشانگر موس به حالت "در حال انجام کار" */
+    cursor: progress !important; 
+    
+    /* جلوگیری از کلیک */
+    pointer-events: none; 
+    
+    /* دکمه کمی کوچک و خاکستری می‌شود تا حس غیرفعال بودن بدهد */
+    filter: grayscale(50%) brightness(0.7);
+    transform: scale(0.95);
+    
+    /* انیمیشن ضربان برای اینکه بگوییم سیستم زنده است */
+    animation: lockedPulse 2s infinite ease-in-out;
+    
+    transition: all 0.3s ease;
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.171);
+    /* box-shadow: none !important; */
+}
+
+/* تعریف انیمیشن ضربان ملایم */
+@keyframes lockedPulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 0.9; }
+    100% { opacity: 0.6; }
+}
+
+/* لایه تایمر (پس‌زمینه که پر می‌شود) */
+.btn.is-locked::before, 
+.retry-btn.is-locked::before
+{
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    
+    /* شروع از 0 و رسیدن به 100 درصد */
+    height: 0%; 
+    
+    /* رنگ گرادینت شیشه‌ای و مدرن به جای سفید ساده */
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.318), rgba(255, 255, 255, 0.197));
+    border-top: 1px solid rgba(255, 255, 255, 0.199); /* خط نازک بالای تایمر */
+    
+    z-index: 10;
+    
+    /* انیمیشن پر شدن در ۱۰ ثانیه */
+    transition: height 10s linear; 
+}
+
+/* وقتی کلاس اضافه می‌شود، ارتفاع ۱۰۰٪ می‌شود */
+.btn.is-locked::before, 
+.retry-btn.is-locked::before
+{
+    height: 100%; 
+}
+
+/* اگر می‌خواهید آیکون داخل دکمه هم کمی شفاف شود */
+.btn.is-locked i, 
+.retry-btn.is-locked i {
+    opacity: 0.5;
 }

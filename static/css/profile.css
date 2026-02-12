@@ -117,6 +117,7 @@
 /* باکس URL */
 .url-box {
     display: inline-flex;
+    justify-content: space-between;
     align-items: center;
     gap: 10px;
     border-radius: 8px;

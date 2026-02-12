@@ -1,50 +1,65 @@
 {
-console.log("profile.js لود شد");
-
-// تابع کپی URL (همون قبلی که کار می‌کرد)
 function initProfileCopy() {
-    const urlBox = document.getElementById("urlBox");
-    if (!urlBox) return;
+    const urlBoxes = document.querySelectorAll(".url-box"); 
+    
+    if (!urlBoxes.length) return;
 
-    const urlTextEl = urlBox.querySelector(".url-text");
-    if (!urlTextEl) return;
+    urlBoxes.forEach(urlBox => {
+        const urlTextEl = urlBox.querySelector(".url-text");
+        if (!urlTextEl) return;
 
-    const textToCopy = urlTextEl.textContent.trim();
-    if (!textToCopy || textToCopy === "-" || textToCopy === "") return;
+        // متن هر باکس جداگانه گرفته می‌شود
+        const textToCopy = urlTextEl.textContent.trim();
+        if (!textToCopy || textToCopy === "-" || textToCopy === "") return;
 
-    const copyBtn = urlBox.querySelector(".copy-btn");
+        const copyBtn = urlBox.querySelector(".copy-btn");
 
-    async function doCopy(e) {
-        if (e && e.target.closest(".copy-btn")) {
-            e.stopPropagation();
-        }
-
-        try {
-            if (navigator.clipboard && window.isSecureContext) {
-                await navigator.clipboard.writeText(textToCopy);
-            } else {
-                // fallback برای HTTP
-                const textarea = document.createElement("textarea");
-                textarea.value = textToCopy;
-                textarea.style.position = "fixed";
-                textarea.style.opacity = "0";
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand("copy");
-                document.body.removeChild(textarea);
+        async function doCopy(e) {
+            // جلوگیری از تداخل کلیک دکمه و کلیک روی باکس
+            if (e && e.target.closest(".copy-btn")) {
+                e.stopPropagation();
             }
-            urlBox.classList.add("copied");
-            setTimeout(() => urlBox.classList.remove("copied"), 2000);
-        } catch (err) {
-            prompt("لطفاً دستی کپی کنید:", textToCopy);
+
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(textToCopy);
+                } else {
+                    // روش جایگزین (Fallback)
+                    const textarea = document.createElement("textarea");
+                    textarea.value = textToCopy;
+                    textarea.style.position = "fixed";
+                    textarea.style.opacity = "0";
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(textarea);
+                }
+                
+                // افکت تصویری برای همین باکس
+                urlBox.classList.add("copied");
+                setTimeout(() => urlBox.classList.remove("copied"), 2000);
+                
+                // نمایش پیام موفقیت 
+                if (typeof showToast === "function") {
+                    showToast("کپی شد!", "success");
+                }
+                
+            } catch (err) {
+                prompt("لطفاً دستی کپی کنید:", textToCopy);
+            }
         }
-    }
 
-    urlBox.onclick = null;
-    if (copyBtn) copyBtn.replaceWith(copyBtn.cloneNode(true));
+        // حذف لیسنرهای قبلی با کلون کردن دکمه (برای جلوگیری از تکرار رویداد)
+        if (copyBtn) {
+            const newBtn = copyBtn.cloneNode(true);
+            copyBtn.parentNode.replaceChild(newBtn, copyBtn);
+            newBtn.addEventListener("click", doCopy);
+        }
 
-    urlBox.addEventListener("click", doCopy);
-    urlBox.querySelector(".copy-btn")?.addEventListener("click", doCopy);
+        // اگر بخواهید با کلیک روی خود باکس هم کپی شود:
+        urlBox.onclick = null; // حذف رویداد قدیمی
+        urlBox.addEventListener("click", doCopy);
+    });
 }
 
 function initProfileEdit() {
@@ -124,7 +139,6 @@ function initProfileEdit() {
 
 // اجرا فقط وقتی محتوا لود شد
 function runProfileScripts() {
-    console.log("اجرای اسکریپت‌های پروفایل...");
     initProfileCopy();
     initProfileEdit();
 }

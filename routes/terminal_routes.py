@@ -18,39 +18,48 @@ def get_current_user():
 @terminal_bp.route('/terminal')
 def terminal():
     user = get_current_user()
+    # اگر کاربر لاگین نیست
     if not user:
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return jsonify({'refresh': True, 'redirect': '/form'}), 200
         return redirect('/form')
 
+    # دریافت پروفایل یا ساخت آن اگر وجود نداشت
     profile = Profile.query.filter_by(user_id=user.id).first()
     if not profile:
         profile = Profile(user_id=user.id)
         db.session.add(profile)
         db.session.commit()
 
+    # مدیریت مسیر فعلی ترمینال
+    # اگر خالی بود پیش‌فرض C:\User در نظر می‌گیریم
+    base_path = (profile.current_directory or "C:\\User")
+    # تمیزکاری مسیر (حذف اسلش اضافه آخر و افزودن >)
+    current_path_display = base_path.rstrip('\\') + "\\>"
     
-    current_path = (profile.current_directory or "C:\\User").rstrip('\\') + "\\>"
-    print("Current path in terminal:", current_path);
-    
-    template_content = render_template('terminal.html', profile=profile, current_path="current_path_1")
+    # برای جاوااسکریپت باید بک‌اسلش‌ها دوتایی شوند
+    initial_route_js = current_path_display.replace("\\", "\\\\")
 
+    # رندر کردن محتوای داخلی ترمینال
+    # پارامتر current_path را به قالب می‌فرستیم تا در پرامپت نمایش داده شود
+    template_content = render_template('terminal.html', 
+                                     profile=profile, 
+                                     current_path=current_path_display)
+
+    # 1. اگر درخواست AJAX است (سوییچ از منو)
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({
             'content': template_content,
             'css': ['/static/css/terminal.css'],
+            'initial_route': initial_route_js # ارسال مسیر به عنوان تایتل تب یا وضعیت
         })
 
-    # رفرش کامل صفحه (F5)
-    current_path = current_path.replace("\\", "\\\\");
+    # 2. اگر درخواست معمولی است (رفرش صفحه یا ورود مستقیم)
     return render_template('base.html',
                            title="Terminal",
                            content=template_content,
-                           initial_route=current_path)
-    
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return jsonify({'refresh': True, 'redirect': '/form'}), 200
-    return redirect('/form')
+                           extra_css=['/static/css/terminal.css'],
+                           initial_route=initial_route_js) 
 
 @terminal_bp.route('/save-command', methods=['POST'])
 def save_command():
@@ -95,30 +104,6 @@ def save_command():
         "id": new_id,
         "type": command_type
     })
-
-@terminal_bp.route('/last-commands')
-def get_last_commands():
-    user = get_current_user()
-    if not user:
-        return jsonify({'error': 'Unauthorized'}), 401
-    
-    profile = Profile.query.filter_by(user_id=user.id).first()
-    
-    if profile and profile.last_commands:
-        # ذخیره مقادیر فعلی برای ارسال به کلاینت
-        current_commands = {
-            'cmd': profile.last_commands.get('cmd', ''),
-            'powershell': profile.last_commands.get('powershell', '')
-        }
-        
-        # خالی کردن فیلد بعد از خواندن
-        profile.last_commands = {'cmd': '', 'powershell': ''}
-        db.session.commit()
-        
-        return jsonify(current_commands)
-    
-    # اگر پروفایلی نبود یا خالی بود
-    return jsonify({'cmd': '', 'powershell': ''})
 
 @terminal_bp.route('/api/user/<token>/inbox', methods=['GET', 'POST'])
 def inbox_send(token):
@@ -230,24 +215,6 @@ def inbox_new_messages(token):
         "id": last_command['id']
     }), 200
     
-@terminal_bp.route('/api/user/<token>/inbox/page')
-def inbox_page(token):
-    profile = Profile.query.filter_by(inbox_token=token).first()
-    if not profile:
-        return render_template('error.html', message="Invalid token"), 404
-
-    messages = profile.inbox or []
-    
-    # تبدیل \\n به \n قبل از نمایش
-    processed_messages = []
-    for msg in messages:
-        if isinstance(msg, dict) and 'info' in msg and msg['info']:
-            msg = msg.copy()
-            msg['info'] = msg['info']
-        processed_messages.append(msg)
-
-    return render_template('inbox.html', messages=reversed(processed_messages), token=token)
-
 # terminal_routes.py
 @terminal_bp.route('/get-command-info/<int:command_id>')
 def get_command_info(command_id):

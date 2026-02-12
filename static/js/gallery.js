@@ -89,7 +89,7 @@ async function waitForCommandResponse(commandId, type) {
             console.warn(`Polling error for ID ${commandId}:`, err);
             changeState('error');
         }
-    }, 1000);
+    },500);
 
     pendingCommands.set(commandId, { type, intervalId, timeoutId });
 }

@@ -14,22 +14,32 @@ window.addEventListener('load', function() {
         return;
     }
 
+    // تغییر: محتوا را بلافاصله نشان بده (چون نویگیشن داخلش است)
     loader.style.display = 'none';
-    content.style.display = 'block';
+    content.style.display = 'block'; 
 
     const initialUrl = window.location.pathname === '/' ? '/home' : window.location.pathname;
+    
+    // فعال‌سازی لینک مربوطه بدون رفرش (برای اینکه انیمیشن اولیه درست بایستد)
     const activeItem = document.querySelector(`.list[data-url="${initialUrl}"]`);
     if (activeItem) {
         listItems.forEach((item) => item.classList.remove('active'));
         activeItem.classList.add('active');
     }
-    loadPage(initialUrl);
+    
+    
+    // اما برای هماهنگی History API:
+    history.replaceState({ url: initialUrl }, '', initialUrl);
 });
 
 function activeLink(event) {
     event.preventDefault();
+    
+    // 1. تغییر کلاس Active (این خط انیمیشن CSS را فعال می‌کند)
     listItems.forEach((item) => item.classList.remove('active'));
     this.classList.add('active');
+    
+    // 2. شروع لود محتوا
     const url = this.getAttribute('data-url');
     loadPage(url);
 }
@@ -40,64 +50,103 @@ function loadPage(url) {
     const loader = document.querySelector('.loader');
     const content = document.querySelector('.content');
     
-    if (!loader || !content) {
-        return;
-    }
+    if (!loader || !content) return;
 
     loader.style.display = 'grid';
-    content.style.display = 'none';
+    
+    // محو کردن محتوا
+    mainContent.style.opacity = '0';
+    mainContent.style.transition = 'opacity 0.2s'; 
+    mainContent.style.pointerEvents = 'none';
 
     fetch(url, {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
     })
     .then(response => {
-        if (!response.ok) {
-            throw new Error();
-        }
+        if (!response.ok) throw new Error();
         const contentType = response.headers.get('Content-Type');
-        if (contentType && contentType.includes('application/json')) {
-            return response.json();
-        } else {
-            return response.text();
-        }
+        return (contentType && contentType.includes('application/json')) ? response.json() : response.text();
     })
-    .then(data => {
-        // === رفرش کامل صفحه ===
+    .then(async data => { // تابع async
+        // هندل کردن ریدایرکت‌ها
         if (data.refresh && data.redirect) {
             window.location.href = data.redirect;
             return;
         }
-        if(data.search)
-            search.style.display = "flex";
-        else 
-            search.style.display = "none";
-
         if (typeof data === 'object' && data.status === 'unauthenticated') {
             window.location.href = data.redirect;
             return;
         }
+        if(search) {
+            if(data.search) search.style.display = "flex";
+            else search.style.display = "none";
+        }
 
+        // اگر دیتا فرمت استاندارد ما را دارد
         if (typeof data === 'object' && data.content) {
-            mainContent.innerHTML = data.content;
-            setTimeout(() => document.dispatchEvent(new Event("pageContentLoaded")), 10);
-            console.log("محتوای صفحه بارگذاری شد → رویداد pageContentLoaded ارسال شد");
-            if (data.initial_route) {
-                window.initialRoute = data.initial_route;
+            
+            // ============================================================
+            // گام حیاتی: لود کردن CSS جدید **قبل** از تغییر HTML
+            // ============================================================
+            
+            const cssPromises = [];
+            
+            // لیست CSSهای جدید
+            if (data.css && data.css.length > 0) {
+                data.css.forEach(cssUrl => {
+                    // چک میکنیم اگر این CSS قبلا در صفحه هست، دوباره لود نکنیم
+                    if (!document.querySelector(`link[href="${cssUrl}"]`)) {
+                        const link = document.createElement('link');
+                        link.rel = 'stylesheet';
+                        link.href = cssUrl;
+                        link.setAttribute('data-page-specific', 'true'); // علامت‌گذاری به عنوان جدید
+                        
+                        const p = new Promise((resolve) => {
+                            link.onload = () => resolve();
+                            link.onerror = () => resolve(); // خطا داد هم رد شو که گیر نکنه
+                        });
+                        
+                        document.head.appendChild(link);
+                        cssPromises.push(p);
+                    }
+                });
             }
 
-            document.querySelectorAll('link[data-page-specific]').forEach(link => link.remove());
-            document.querySelectorAll('script[data-page-specific]').forEach(script => script.remove());
+            // یک تایم‌اوت 2 ثانیه‌ای هم میذاریم که اگر اینترنت قطع بود برنامه قفل نکنه
+            if (cssPromises.length > 0) {
+                const timeout = new Promise(r => setTimeout(r, 2000));
+                await Promise.race([Promise.all(cssPromises), timeout]);
+            }
 
-            data.css?.forEach(css => {
-                const link = document.createElement('link');
-                link.rel = 'stylesheet';
-                link.href = css;
-                link.setAttribute('data-page-specific', 'true');
-                document.head.appendChild(link);
+            // 1. تغییر HTML
+            mainContent.innerHTML = data.content;
+            
+            // 2. پاکسازی CSS و JS قدیمی
+            const newCssList = data.css || [];
+            
+            document.querySelectorAll('link[data-page-specific]').forEach(link => {
+                const href = link.getAttribute('href');                
+                                
+                let isNeeded = false;
+                newCssList.forEach(newUrl => {
+                    if (href.includes(newUrl)) isNeeded = true;
+                });
+                
+                if (!isNeeded) {
+                    link.remove();
+                }
             });
 
+            // حذف همه اسکریپت‌های قدیمی
+            document.querySelectorAll('script[data-page-specific]').forEach(script => script.remove());
+
+
+            // 3. اجرای تنظیمات اولیه
+            if (data.initial_route) window.initialRoute = data.initial_route;
+            setTimeout(() => document.dispatchEvent(new Event("pageContentLoaded")), 10);
+
+
+            // 4. لود اسکریپت‌های جدید
             setTimeout(() => {
                 data.js?.forEach(js => {
                     const script = document.createElement('script');
@@ -111,18 +160,28 @@ function loadPage(url) {
                     };
                     document.body.appendChild(script);
                 });
-            }, 100);
+            }, 50);
+
         } else {
+            // حالت غیر JSON (متن خالی)
             mainContent.innerHTML = data;
         }
+
         history.pushState({ url: url }, '', url);
-        loader.style.display = 'none';
-        content.style.display = 'block';
     })
     .catch(error => {
-        mainContent.innerHTML = '<p>خطا در بارگذاری محتوا. لطفاً دوباره تلاش کنید.</p>';
+        console.error(error);
+        mainContent.innerHTML = '<p style="text-align:center;color:white;">Error Loading Page</p>';
+    })
+    .finally(() => {
+        // پایان کار: مخفی کردن لودر و نمایش محتوا
         loader.style.display = 'none';
-        content.style.display = 'block';
+        
+        // با یک تاخیر بسیار جزئی (یک فریم) محتوا را ظاهر میکنیم
+        requestAnimationFrame(() => {
+            mainContent.style.opacity = '1';
+            mainContent.style.pointerEvents = 'auto';
+        });
     });
 }
 
@@ -131,6 +190,7 @@ window.addEventListener('popstate', (event) => {
         const url = event.state.url;
         const activeItem = document.querySelector(`.list[data-url="${url}"]`);
         if (activeItem) {
+            // تغییر کلاس active برای دکمه‌های Back/Forward
             listItems.forEach((item) => item.classList.remove('active'));
             activeItem.classList.add('active');
         }
@@ -157,7 +217,6 @@ function setStatus(isOnline) {
 function updateStatus() {
     setStatus(navigator.onLine);
 }
-
 updateStatus();
 window.addEventListener("online", updateStatus);
 window.addEventListener("offline", updateStatus);
@@ -170,18 +229,10 @@ async function checkConnection() {
         setStatus(false);
     }
 }
-
 setInterval(checkConnection, 3000);
 
-// add serviceWorker to site
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => {
-        console.log('✅ Service Worker ثبت شد با scope:', reg.scope);
-      })
-      .catch(err => {
-        console.error('❌ ثبت Service Worker با خطا مواجه شد:', err);
-      });
+    navigator.serviceWorker.register('/sw.js').catch(console.error);
   });
 }
